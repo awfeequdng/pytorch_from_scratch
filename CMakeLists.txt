@@ -52,7 +52,7 @@ cmake_dependent_option(
 
 option(COLORIZE_OUTPUT "Colorize output during compilation" ON)
 
-option(USE_CUDA "Use CUDA" ON)
+option(USE_CUDA "Use CUDA" OFF)
 # BUILD_SPLIT_CUDA must also be exported as an environment variable before building, with
 # `export BUILD_SPLIT_CUDA=1` because cpp_extension.py can only work properly if this variable
 # also exists in the environment.

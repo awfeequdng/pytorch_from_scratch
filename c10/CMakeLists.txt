@@ -26,7 +26,7 @@ file(GLOB C10_SRCS
     # core/impl/*.cpp
     # mobile/*.cpp
     # macros/*.cpp
-    # util/*.cpp
+    util/*.cpp
     )
 
 file(GLOB_RECURSE C10_ALL_TEST_FILES test/*.cpp)
@@ -49,7 +49,7 @@ endif()
 if(${USE_GLOG})
     target_link_libraries(c10 PUBLIC glog::glog)
 endif()
-target_link_libraries(c10 PRIVATE fmt::fmt-header-only)
+# target_link_libraries(c10 PRIVATE fmt::fmt-header-only)
 
 find_package(Backtrace)
 if(Backtrace_FOUND)
@@ -89,9 +89,9 @@ endif()
 # individual libraries like libc10.so and libcaffe2.so are still self-contained.
 
 # todo: install 命令暂时不能乱用，会将这些文件放到系统下面去，造成文件混乱
-# install(TARGETS c10 EXPORT Caffe2Targets DESTINATION lib)
-# install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
-#         DESTINATION include
-#         FILES_MATCHING PATTERN "*.h")
-# install(FILES ${CMAKE_BINARY_DIR}/c10/macros/cmake_macros.h
-#         DESTINATION include/c10/macros)
+install(TARGETS c10 EXPORT Caffe2Targets DESTINATION lib)
+install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
+        DESTINATION include
+        FILES_MATCHING PATTERN "*.h")
+install(FILES ${CMAKE_BINARY_DIR}/c10/macros/cmake_macros.h
+        DESTINATION include/c10/macros)
