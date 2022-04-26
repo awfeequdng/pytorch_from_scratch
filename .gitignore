@@ -4,5 +4,10 @@ build
 *.lib
 *.o
 __pycache__
+tools/__pycache__
+tools/*/__pycache__
+torch/__pycache__
+
+
 compile_commands.json
 torch.egg-info
