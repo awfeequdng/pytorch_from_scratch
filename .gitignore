@@ -3,3 +3,5 @@ build
 *.so
 *.lib
 *.o
+__pycache__
+compile_commands.json
