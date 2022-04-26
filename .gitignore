@@ -5,3 +5,4 @@ build
 *.o
 __pycache__
 compile_commands.json
+torch.egg-info
