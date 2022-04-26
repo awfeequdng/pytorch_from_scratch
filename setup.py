@@ -32,6 +32,7 @@ import glob
 import importlib
 import shutil
 
+from tools.build_pytorch_libs import build_caffe2
 from tools.setup_helpers.env import (BUILD_DIR, IS_LINUX, build_type)
 from tools.setup_helpers.cmake import CMake
 from tools.generate_torch_version import get_torch_version
@@ -479,6 +480,18 @@ def build_deps():
     report('-- Building version ' + version)
     check_submodules()
     # check_pydep('yaml', 'pyyaml')
+    build_caffe2(version=version,
+                 cmake_python_library=cmake_python_library,
+                 build_python=True,
+                 rerun_cmake=RERUN_CMAKE,
+                 cmake_only=CMAKE_ONLY,
+                 cmake=cmake)
+
+    if CMAKE_ONLY:
+        report('Finished running cmake. Run "ccmake build" or '
+               '"cmake-gui build" to adjust build options and '
+               '"python setup.py install" to build.')
+        sys.exit()
 
 
 def print_box(msg):
