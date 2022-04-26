@@ -29,6 +29,8 @@ import os
 import sysconfig
 import json
 import glob
+import importlib
+import shutil
 
 from tools.setup_helpers.env import (BUILD_DIR, IS_LINUX, build_type)
 from tools.setup_helpers.cmake import CMake
@@ -147,8 +149,8 @@ def check_submodules():
         check_for_files(folder, ["CMakeLists.txt", "Makefile", "setup.py", "LICENSE", "LICENSE.md", "LICENSE.txt"])
     check_for_files(os.path.join(third_party_path, 'fbgemm', 'third_party',
                                  'asmjit'), ['CMakeLists.txt'])
-    check_for_files(os.path.join(third_party_path, 'onnx', 'third_party',
-                                 'benchmark'), ['CMakeLists.txt'])
+    # check_for_files(os.path.join(third_party_path, 'onnx', 'third_party',
+    #                              'benchmark'), ['CMakeLists.txt'])
 
 
 install_requires = [
@@ -333,6 +335,9 @@ class clean(setuptools.Command):
             ignores = f.read()
             pat = re.compile(r'^#( BEGIN NOT-CLEAN-FILES )?')
             for wildcard in filter(None, ignores.split('\n')):
+                if wildcard == '.vscode':
+                    # do not remove .vscode
+                    continue
                 match = pat.match(wildcard)
                 if match:
                     if match.group(1):
@@ -462,12 +467,18 @@ def configure_extension_build():
             # 'torchrun = torch.distributed.run:main',
         ]
     }
-
     return extensions, cmdclass, packages, entry_points, extra_install_requires
+
+def check_pydep(importname, module):
+    try:
+        importlib.import_module(importname)
+    except ImportError:
+        raise RuntimeError(missing_pydep.format(importname=importname, module=module))
 
 def build_deps():
     report('-- Building version ' + version)
-
+    check_submodules()
+    # check_pydep('yaml', 'pyyaml')
 
 
 def print_box(msg):
