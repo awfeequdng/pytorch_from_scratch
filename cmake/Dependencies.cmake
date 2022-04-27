@@ -46,6 +46,13 @@ else()
       "Cannot find threading library. Caffe2 requires Threads to compile.")
 endif()
 
+# ---[ gflags
+if (USE_GFLAGS)
+  add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/../third_party/gflags)
+  # 不需要设置头文件的位置也可以找到，gflags的头文件
+  # include_directories(BEFORE SYSTEM ${CMAKE_CURRENT_LIST_DIR}/../third_party/gflags)
+endif()
+list(APPEND Caffe2_DEPENDENCY_LIBS gflags)
 
 # ---[ Googletest and benchmark
 if(BUILD_TEST)

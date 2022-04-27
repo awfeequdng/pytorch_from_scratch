@@ -8,6 +8,7 @@
 #include <iostream>
 
 #include <c10/macros/Macros.h>
+#include <c10/util/Type.h>
 
 namespace c10
 {
@@ -139,7 +140,7 @@ class Registerer {
 public:
     explicit Registerer(
         const SrcType& key,
-        const Registry<SrcType, ObjectPtrType, Args...>* registry,
+        Registry<SrcType, ObjectPtrType, Args...>* registry,
         typename Registry<SrcType, ObjectPtrType, Args...>::Creator creator,
         const std::string& help_msg = "") {
         registry->Register(key, creator, help_msg);
@@ -162,7 +163,8 @@ public:
 
 } // namespace c10
 
-#define C10_DECLARE_TYPED_REGISTRY(RegistryName, SrcType, ObjectType, PtrType, ...) \
+#define C10_DECLARE_TYPED_REGISTRY(                                             \
+    RegistryName, SrcType, ObjectType, PtrType, ...) \
     ::c10::Registry<SrcType, PtrType<ObjectType>, ##__VA_ARGS__>*                   \
     RegistryName();                                                                 \
     typedef ::c10::Registerer<SrcType, PtrType<ObjectType>, ##__VA_ARGS__>          \
@@ -181,8 +183,8 @@ public:
 
 #define C10_DEFINE_TYPED_REGISTRY_WITHOUT_WARNING(                            \
     RegistryName, SrcType, ObjectType, PtrType, ...)                          \
-  C10_EXPORT ::c10::Registry<SrcType, PtrType<ObjectType>, ##__VA_ARGS__>*    \
-  RegistryName() {                                                            \
+    ::c10::Registry<SrcType, PtrType<ObjectType>, ##__VA_ARGS__>*             \
+    RegistryName() {                                                          \
     static ::c10::Registry<SrcType, PtrType<ObjectType>, ##__VA_ARGS__>*      \
         registry =                                                            \
             new ::c10::Registry<SrcType, PtrType<ObjectType>, ##__VA_ARGS__>( \
@@ -206,7 +208,7 @@ public:
       key,                                                                  \
       RegistryName(),                                                       \
       Registerer##RegistryName::DefaultCreator<__VA_ARGS__>,                \
-      ::c10::demangle_type<__VA_ARGS__>());
+      ::c10::demangle_type<__VA_ARGS__>())
 
 #define C10_REGISTER_TYPED_CLASS_WITH_PRIORITY(                             \
     RegistryName, key, priority, ...)                                       \
@@ -215,7 +217,7 @@ public:
       priority,                                                             \
       RegistryName(),                                                       \
       Registerer##RegistryName::DefaultCreator<__VA_ARGS__>,                \
-      ::c10::demangle_type<__VA_ARGS__>());
+      ::c10::demangle_type<__VA_ARGS__>())
 
 
 // C10_DECLARE_REGISTRY and C10_DEFINE_REGISTRY are hard-wired to use
@@ -244,3 +246,20 @@ public:
     RegistryName, ObjectType, ...)                  \
   C10_DEFINE_TYPED_REGISTRY_WITHOUT_WARNING(        \
       RegistryName, std::string, ObjectType, std::shared_ptr, ##__VA_ARGS__)
+
+// C10_REGISTER_CREATOR and C10_REGISTER_CLASS are hard-wired to use std::string
+// as the key
+// type, because that is the most commonly used cases.
+#define C10_REGISTER_CREATOR(RegistryName, key, ...) \
+  C10_REGISTER_TYPED_CREATOR(RegistryName, #key, __VA_ARGS__)
+
+#define C10_REGISTER_CREATOR_WITH_PRIORITY(RegistryName, key, priority, ...) \
+  C10_REGISTER_TYPED_CREATOR_WITH_PRIORITY(                                  \
+      RegistryName, #key, priority, __VA_ARGS__)
+
+#define C10_REGISTER_CLASS(RegistryName, key, ...) \
+  C10_REGISTER_TYPED_CLASS(RegistryName, #key, __VA_ARGS__)
+
+#define C10_REGISTER_CLASS_WITH_PRIORITY(RegistryName, key, priority, ...) \
+  C10_REGISTER_TYPED_CLASS_WITH_PRIORITY(                                  \
+      RegistryName, #key, priority, __VA_ARGS__)

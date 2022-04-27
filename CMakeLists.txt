@@ -77,7 +77,7 @@ cmake_dependent_option(
 option(USE_FBGEMM "Use FBGEMM (quantized 8-bit server operators)" ON)
 option(USE_KINETO "Use Kineto profiling library" ON)
 option(USE_BREAKPAD "Use breakpad crash dump library" ON)
-option(USE_GFLAGS "Use GFLAGS" OFF)
+option(USE_GFLAGS "Use GFLAGS" ON)
 option(USE_GLOG "Use GLOG" OFF)
 option(USE_LEVELDB "Use LEVELDB" OFF)
 option(USE_NATIVE_ARCH "Use -march=native" OFF)
@@ -427,9 +427,6 @@ include_directories(BEFORE ${PROJECT_SOURCE_DIR})
 # These need to take precedence over their empty counterparts located
 # in PROJECT_SOURCE_DIR.
 include_directories(BEFORE ${PROJECT_BINARY_DIR})
-
-include_directories(BEFORE ${PROJECT_SOURCE_DIR}/aten/src/)
-include_directories(BEFORE ${PROJECT_BINARY_DIR}/aten/src/)
 
 # ---[ Main build
 add_subdirectory(c10)
