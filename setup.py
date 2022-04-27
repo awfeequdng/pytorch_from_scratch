@@ -494,6 +494,18 @@ def build_deps():
         sys.exit()
 
 
+# post run, warnings, printed at the end to make them more visible
+build_update_message = """
+    It is no longer necessary to use the 'build' or 'rebuild' targets
+
+    To install:
+      $ python setup.py install
+    To develop locally:
+      $ python setup.py develop
+    To force cmake to re-generate native build files (off by default):
+      $ python setup.py develop --cmake
+"""
+
 def print_box(msg):
     lines = msg.split('\n')
     size = max(len(l) + 1 for l in lines)
@@ -555,6 +567,8 @@ if __name__ == '__main__':
         python_requires = '>={}'.format(python_min_version_str)
     )
 
+    if EMIT_BUILD_WARNING:
+        print_box(build_update_message)
 
     # module = Extension('torch._C',
     #                 sources = ['torch/csrc/stub.c'],

@@ -19,18 +19,15 @@ if(env_cxx_standard GREATER -1)
       WARNING "C++ standard version definition detected in environment variable."
       "PyTorch requires -std=c++14. Please remove -std=c++ settings in your environment.")
 endif()
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_C_STANDARD 11)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-set(CPU_AARCH64 OFF)
 set(CPU_INTEL OFF)
 
 if(CMAKE_SYSTEM_PROCESSOR MATCHES "(AMD64|x86_64)")
   set(CPU_INTEL ON)
-elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "^(aarch64|arm64)")
-  set(CPU_AARCH64 ON)
 endif()
 
 # ---[ Options.
@@ -80,18 +77,9 @@ cmake_dependent_option(
 option(USE_FBGEMM "Use FBGEMM (quantized 8-bit server operators)" ON)
 option(USE_KINETO "Use Kineto profiling library" ON)
 option(USE_BREAKPAD "Use breakpad crash dump library" ON)
-option(USE_CUPTI_SO "Use CUPTI as a shared library" ON)
-option(USE_FAKELOWP "Use FakeLowp operators" OFF)
-option(USE_FFMPEG "Use ffmpeg" OFF)
 option(USE_GFLAGS "Use GFLAGS" OFF)
 option(USE_GLOG "Use GLOG" OFF)
 option(USE_LEVELDB "Use LEVELDB" OFF)
-option(USE_LITE_PROTO "Use lite protobuf instead of full." OFF)
-option(USE_LMDB "Use LMDB" OFF)
-option(USE_MAGMA "Use MAGMA" ON)
-# option(USE_METAL "Use Metal for Caffe2 iOS build" ON)
-# option(USE_PYTORCH_METAL "Use Metal for PyTorch iOS build" OFF)
-# option(USE_PYTORCH_METAL_EXPORT "Export Metal models on MacOSX desktop" OFF)
 option(USE_NATIVE_ARCH "Use -march=native" OFF)
 cmake_dependent_option(
     USE_NCCL "Use NCCL" ON
@@ -104,36 +92,19 @@ cmake_dependent_option(
 cmake_dependent_option(
     USE_SYSTEM_NCCL "Use system-wide NCCL" OFF
     "USE_NCCL" OFF)
-option(USE_NNAPI "Use NNAPI" OFF)
-option(USE_NNPACK "Use NNPACK" ON)
 cmake_dependent_option(
     USE_NUMA "Use NUMA. Only available on Linux." ON
     "LINUX" OFF)
 cmake_dependent_option(
     USE_NVRTC "Use NVRTC. Only available if USE_CUDA is on." OFF
     "USE_CUDA" OFF)
-option(USE_NUMPY "Use NumPy" ON)
-option(USE_OBSERVERS "Use observers module." OFF)
-option(USE_OPENCL "Use OpenCL" OFF)
-option(USE_OPENCV "Use OpenCV" OFF)
 option(USE_OPENMP "Use OpenMP for parallel code" ON)
 cmake_dependent_option(
     USE_PRECOMPILED_HEADERS "Use pre-compiled headers to accelerate build. Requires cmake >= 3.16." OFF
     "CMAKE_VERSION VERSION_GREATER_EQUAL \"3.16\"" OFF)
-# option USE_XNNPACK: try to enable xnnpack by default.
-set(XNNPACK_MIN_CMAKE_VER 3.12)
-cmake_dependent_option(
-    USE_XNNPACK "Use XNNPACK. Requires cmake >= ${XNNPACK_MIN_CMAKE_VER}." ON
-    "CMAKE_VERSION VERSION_GREATER_EQUAL ${XNNPACK_MIN_CMAKE_VER}" OFF)
-if(NOT USE_XNNPACK AND CMAKE_VERSION VERSION_LESS ${XNNPACK_MIN_CMAKE_VER})
-  message(WARNING "USE_XNNPACK is set to OFF. XNNPACK requires CMake version ${XNNPACK_MIN_CMAKE_VER} or greater.")
-endif()
 option(USE_ZMQ "Use ZMQ" OFF)
 option(USE_ZSTD "Use ZSTD" OFF)
 
-cmake_dependent_option(
-    USE_MKLDNN_CBLAS "Use CBLAS in MKLDNN" OFF
-    "USE_MKLDNN" OFF)
 option(USE_STATIC_MKL "Prefer to link with MKL statically (Unix only)" OFF)
 option(USE_DISTRIBUTED "Use distributed" ON)
 
@@ -155,10 +126,6 @@ cmake_dependent_option(
     "USE_C10D_NCCL" OFF)
 cmake_dependent_option(
     USE_C10D_MPI "USE C10D MPI" ON "USE_DISTRIBUTED;USE_MPI" OFF)
-cmake_dependent_option(
-    USE_TENSORPIPE "Use TensorPipe. Only available if USE_DISTRIBUTED is on." ON
-    "USE_DISTRIBUTED" OFF)
-option(ONNX_ML "Enable traditional ONNX ML API." ON)
 option(HAVE_SOVERSION "Whether to add SOVERSION to the shared objects" OFF)
 option(BUILD_LIBTORCH_CPU_WITH_DEBUG "Enable RelWithDebInfo for libtorch_cpu target only" OFF)
 cmake_dependent_option(
@@ -203,9 +170,6 @@ option(USE_SYSTEM_PYBIND11 "Use system-provided PyBind11." OFF)
 option(USE_SYSTEM_PTHREADPOOL "Use system-provided pthreadpool." OFF)
 option(USE_SYSTEM_PSIMD "Use system-provided psimd." OFF)
 option(USE_SYSTEM_FXDIV "Use system-provided fxdiv." OFF)
-option(USE_SYSTEM_BENCHMARK "Use system-provided google benchmark." OFF)
-option(USE_SYSTEM_ONNX "Use system-provided onnx." OFF)
-option(USE_SYSTEM_XNNPACK "Use system-provided xnnpack." OFF)
 option(USE_GOLD_LINKER "Use ld.gold to link" OFF)
 if(USE_SYSTEM_LIBS)
   set(USE_SYSTEM_CPUINFO ON)
@@ -216,10 +180,6 @@ if(USE_SYSTEM_LIBS)
   set(USE_SYSTEM_FP16 ON)
   set(USE_SYSTEM_PTHREADPOOL ON)
   set(USE_SYSTEM_PSIMD ON)
-  set(USE_SYSTEM_FXDIV ON)
-  set(USE_SYSTEM_BENCHMARK ON)
-  set(USE_SYSTEM_ONNX ON)
-  set(USE_SYSTEM_XNNPACK ON)
   set(USE_SYSTEM_PYBIND11 ON)
   if(USE_TBB)
     set(USE_SYSTEM_TBB ON)
@@ -228,24 +188,6 @@ endif()
 
 # Used when building Caffe2 through setup.py
 option(BUILDING_WITH_TORCH_LIBS "Tell cmake if Caffe2 is being built alongside torch libs" ON)
-
-
-if(NOT USE_SYSTEM_ONNX)
-  set(ONNX_NAMESPACE "onnx_torch" CACHE STRING "A namespace for ONNX; needed to build with other frameworks that share ONNX.")
-else()
-  set(ONNX_NAMESPACE "onnx" CACHE STRING "A namespace for ONNX; needed to build with other frameworks that share ONNX.")
-endif()
-set(SELECTED_OP_LIST "" CACHE STRING
-    "Path to the yaml file that contains the list of operators to include for custom build. Include all operators by default.")
-option(
-    STATIC_DISPATCH_BACKEND
-    "Name of the backend for which static dispatch code is generated, e.g.: CPU."
-    "")
-option(USE_LIGHTWEIGHT_DISPATCH "Enable codegen unboxing for ATen ops, need to work with static dispatch in order to work properly." OFF)
-if(USE_LIGHTWEIGHT_DISPATCH AND NOT STATIC_DISPATCH_BACKEND)
-  message(FATAL_ERROR "Need to enable static dispatch after enabling USE_LIGHTWEIGHT_DISPATCH.")
-endif()
-
 
 # This is a fix for a rare build issue on Ubuntu:
 # symbol lookup error: miniconda3/envs/pytorch-py3.7/lib/libmkl_intel_lp64.so: undefined symbol: mkl_blas_dsyrk
@@ -327,51 +269,9 @@ endif()
 
 include(cmake/Dependencies.cmake)
 
-if(USE_CUDA AND (CMAKE_CUDA_COMPILER_VERSION VERSION_LESS 10.2) AND (CMAKE_HOST_SYSTEM_NAME MATCHES "Windows"))
-  # CUDA < 10.2 doesn't support compiling and extracting header dependencies in
-  # one call, so instead CMake calls nvcc twice with && in between.
-  # However, on windows cmd.exe has a 8191 character limit for commands which we
-  # start hitting. This moves most argments into a file to avoid going over the limit
-
-  set(CMAKE_CUDA_USE_RESPONSE_FILE_FOR_OBJECTS ON)
-  set(CMAKE_NINJA_FORCE_RESPONSE_FILE ON CACHE INTERNAL "")
-endif()
-
-
 if(USE_FBGEMM)
   string(APPEND CMAKE_CXX_FLAGS " -DUSE_FBGEMM")
 endif()
-
-if(USE_QNNPACK)
-  string(APPEND CMAKE_CXX_FLAGS " -DUSE_QNNPACK")
-endif()
-
-if(USE_PYTORCH_QNNPACK)
-  string(APPEND CMAKE_CXX_FLAGS " -DUSE_PYTORCH_QNNPACK")
-endif()
-
-
-if(USE_XNNPACK)
-  string(APPEND CMAKE_CXX_FLAGS " -DUSE_XNNPACK")
-endif()
-
-
-if(BUILD_LITE_INTERPRETER)
-  string(APPEND CMAKE_CXX_FLAGS " -DBUILD_LITE_INTERPRETER")
-endif()
-
-if(TRACING_BASED)
-  string(APPEND CMAKE_CXX_FLAGS " -DTRACING_BASED")
-endif()
-
-if(USE_PYTORCH_METAL)
-  string(APPEND CMAKE_CXX_FLAGS " -DUSE_PYTORCH_METAL")
-endif()
-
-if(USE_PYTORCH_METAL_EXPORT)
-  string(APPEND CMAKE_CXX_FLAGS " -DUSE_PYTORCH_METAL_EXPORT")
-endif()
-
 
 # # ---[ Allowlist file if allowlist is specified
 # include(cmake/Allowlist.cmake)
@@ -566,61 +466,44 @@ endif()
 # script will fail. As a result, we will only provide the targets cmake
 # files for shared lib installation. For more info, read:
 # https://cmake.org/pipermail/cmake/2016-May/063400.html
-if(BUILD_SHARED_LIBS)
-  configure_file(
-      ${PROJECT_SOURCE_DIR}/cmake/Caffe2ConfigVersion.cmake.in
-      ${PROJECT_BINARY_DIR}/Caffe2ConfigVersion.cmake
-      @ONLY)
-  configure_file(
-      ${PROJECT_SOURCE_DIR}/cmake/Caffe2Config.cmake.in
-      ${PROJECT_BINARY_DIR}/Caffe2Config.cmake
-      @ONLY)
-  install(FILES
-      ${PROJECT_BINARY_DIR}/Caffe2ConfigVersion.cmake
-      ${PROJECT_BINARY_DIR}/Caffe2Config.cmake
-      DESTINATION share/cmake/Caffe2
-      COMPONENT dev)
-  install(FILES
-      ${PROJECT_SOURCE_DIR}/cmake/public/cuda.cmake
-      ${PROJECT_SOURCE_DIR}/cmake/public/glog.cmake
-      ${PROJECT_SOURCE_DIR}/cmake/public/gflags.cmake
-      ${PROJECT_SOURCE_DIR}/cmake/public/mkl.cmake
-      ${PROJECT_SOURCE_DIR}/cmake/public/mkldnn.cmake
-      ${PROJECT_SOURCE_DIR}/cmake/public/protobuf.cmake
-      ${PROJECT_SOURCE_DIR}/cmake/public/threads.cmake
-      ${PROJECT_SOURCE_DIR}/cmake/public/utils.cmake
-      DESTINATION share/cmake/Caffe2/public
-      COMPONENT dev)
-  install(DIRECTORY
-      ${PROJECT_SOURCE_DIR}/cmake/Modules_CUDA_fix
-      DESTINATION share/cmake/Caffe2/
-      COMPONENT dev)
+# if(BUILD_SHARED_LIBS)
+#   configure_file(
+#       ${PROJECT_SOURCE_DIR}/cmake/Caffe2ConfigVersion.cmake.in
+#       ${PROJECT_BINARY_DIR}/Caffe2ConfigVersion.cmake
+#       @ONLY)
+#   configure_file(
+#       ${PROJECT_SOURCE_DIR}/cmake/Caffe2Config.cmake.in
+#       ${PROJECT_BINARY_DIR}/Caffe2Config.cmake
+#       @ONLY)
+#   install(FILES
+#       ${PROJECT_BINARY_DIR}/Caffe2ConfigVersion.cmake
+#       ${PROJECT_BINARY_DIR}/Caffe2Config.cmake
+#       DESTINATION share/cmake/Caffe2
+#       COMPONENT dev)
+#   install(FILES
+#       ${PROJECT_SOURCE_DIR}/cmake/public/cuda.cmake
+#       ${PROJECT_SOURCE_DIR}/cmake/public/glog.cmake
+#       ${PROJECT_SOURCE_DIR}/cmake/public/gflags.cmake
+#       ${PROJECT_SOURCE_DIR}/cmake/public/mkl.cmake
+#       ${PROJECT_SOURCE_DIR}/cmake/public/mkldnn.cmake
+#       ${PROJECT_SOURCE_DIR}/cmake/public/protobuf.cmake
+#       ${PROJECT_SOURCE_DIR}/cmake/public/threads.cmake
+#       ${PROJECT_SOURCE_DIR}/cmake/public/utils.cmake
+#       DESTINATION share/cmake/Caffe2/public
+#       COMPONENT dev)
+#   install(DIRECTORY
+#       ${PROJECT_SOURCE_DIR}/cmake/Modules_CUDA_fix
+#       DESTINATION share/cmake/Caffe2/
+#       COMPONENT dev)
 
-  install(EXPORT Caffe2Targets DESTINATION share/cmake/Caffe2
-      FILE Caffe2Targets.cmake
-      COMPONENT dev)
-else()
-  message(WARNING
-      "Generated cmake files are only available when building "
-      "shared libs.")
-endif()
-
-
-# ---[ Modules
-# If master flag for buildling Caffe2 is disabled, we also disable the
-# build for Caffe2 related operator modules.
-if(BUILD_CAFFE2)
-  add_subdirectory(modules)
-endif()
-
-# ---[ Binaries
-# Binaries will be built after the Caffe2 main libraries and the modules
-# are built. For the binaries, they will be linked to the Caffe2 main
-# libraries, as well as all the modules that are built with Caffe2 (the ones
-# built in the previous Modules section above).
-if(BUILD_BINARY)
-  add_subdirectory(binaries)
-endif()
+#   install(EXPORT Caffe2Targets DESTINATION share/cmake/Caffe2
+#       FILE Caffe2Targets.cmake
+#       COMPONENT dev)
+# else()
+#   message(WARNING
+#       "Generated cmake files are only available when building "
+#       "shared libs.")
+# endif()
 
 include(cmake/Summary.cmake)
 caffe2_print_configuration_summary()

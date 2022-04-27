@@ -3,8 +3,10 @@ import os
 import re
 from subprocess import check_call, check_output, CalledProcessError
 from distutils.version import LooseVersion
-from typing import Optional, Union, IO, Dict, Any, List
+from typing import Optional, Union, IO, Dict, Any, List, cast
 import multiprocessing
+import sysconfig
+import sys
 
 from . import which
 from .env import (BUILD_DIR)
@@ -309,6 +311,7 @@ class CMake:
             build_args += ['--']
 
             build_args += ['-j', max_jobs]
+        print(f'build_args: {build_args}')
         self.run(build_args, my_env)
 
 

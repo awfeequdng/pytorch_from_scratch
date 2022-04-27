@@ -1,6 +1,7 @@
 from typing import Optional, Dict
 
 import shutil
+import os
 
 from .setup_helpers.env import check_negative_env_flag
 from .setup_helpers.cmake import CMake
@@ -26,6 +27,7 @@ def build_caffe2(
     cmake: CMake,
 ) -> None:
     my_env = _create_build_env()
+    print(f'my_env: {my_env}')
     build_test = not check_negative_env_flag('BUILD_TEST')
     cmake.generate(version,
                    cmake_python_library,
