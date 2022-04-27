@@ -88,7 +88,6 @@ endif()
 # to deal with the cmake deployment need. Inside the Caffe2Targets set, the
 # individual libraries like libc10.so and libcaffe2.so are still self-contained.
 
-# todo: install 命令暂时不能乱用，会将这些文件放到系统下面去，造成文件混乱
 install(TARGETS c10 EXPORT Caffe2Targets DESTINATION lib)
 install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
         DESTINATION include

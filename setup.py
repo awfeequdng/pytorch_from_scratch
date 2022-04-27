@@ -109,7 +109,7 @@ report(f'BUILD_DIR: {BUILD_DIR}')
 def get_submodule_folders():
     git_modules_path = os.path.join(cwd, ".gitmodules")
     default_modules_path = [os.path.join(third_party_path, name) for name in [
-                            "googletest"
+                            "googletest", "fbgemm", "gflags"
                             # "gloo", "cpuinfo", "tbb", "onnx",
                             # "foxi", "QNNPACK", "fbgemm"
                             ]]
