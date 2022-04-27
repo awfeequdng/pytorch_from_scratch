@@ -39,7 +39,7 @@ from tools.generate_torch_version import get_torch_version
 
 VERBOSE_SCRIPT = True
 RUN_BUILD_DEPS = True
-
+EMIT_BUILD_WARNING = False
 RERUN_CMAKE = False
 CMAKE_ONLY = False
 filtered_args = []

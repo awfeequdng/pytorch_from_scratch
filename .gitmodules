@@ -7,3 +7,6 @@
 [submodule "third_party/fbgemm"]
 	path = third_party/fbgemm
 	url = https://github.com/pytorch/fbgemm
+[submodule "third_party/benchmark"]
+	path = third_party/benchmark
+	url = https://github.com/google/benchmark.git
