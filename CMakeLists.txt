@@ -78,7 +78,7 @@ option(USE_FBGEMM "Use FBGEMM (quantized 8-bit server operators)" ON)
 option(USE_KINETO "Use Kineto profiling library" ON)
 option(USE_BREAKPAD "Use breakpad crash dump library" ON)
 option(USE_GFLAGS "Use GFLAGS" ON)
-option(USE_GLOG "Use GLOG" OFF)
+option(USE_GLOG "Use GLOG" ON)
 option(USE_LEVELDB "Use LEVELDB" OFF)
 option(USE_NATIVE_ARCH "Use -march=native" OFF)
 cmake_dependent_option(

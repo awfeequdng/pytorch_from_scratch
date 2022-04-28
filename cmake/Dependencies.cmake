@@ -54,6 +54,48 @@ if (USE_GFLAGS)
 endif()
 list(APPEND Caffe2_DEPENDENCY_LIBS gflags)
 
+# ---[ gflags
+if (USE_GLOG)
+  # Preserve build options.
+  set(TEMP_BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS})
+  set(TEMP_WITH_CUSTOM_PREFIX ${WITH_CUSTOM_PREFIX})
+  set(TEMP_WITH_GFLAGS ${WITH_GFLAGS})
+  set(TEMP_WITH_GTEST ${WITH_GTEST})
+  set(TEMP_WITH_PKGCONFIG ${WITH_PKGCONFIG})
+  set(TEMP_WITH_SYMBOLIZE ${WITH_SYMBOLIZE})
+  # set(WITH_UNWIND ${WITH_UNWIND})
+  # set(WITH_TLS ${WITH_TLS})
+
+  # We will build gtest as static libs and embed it directly into the binary.
+  # set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libs" FORCE)
+  set(WITH_CUSTOM_PREFIX OFF CACHE BOOL " " FORCE)
+  set(WITH_GFLAGS OFF CACHE BOOL " " FORCE)
+  set(WITH_GTEST OFF CACHE BOOL " " FORCE)
+  set(WITH_PKGCONFIG OFF CACHE BOOL " " FORCE)
+  set(WITH_SYMBOLIZE OFF CACHE BOOL " " FORCE)
+
+# option (WITH_CUSTOM_PREFIX "Enable support for user-generated message prefixes" ON)
+# option (WITH_GFLAGS "Use gflags" ON)
+# option (WITH_GTEST "Use Google Test" ON)
+# option (WITH_PKGCONFIG "Enable pkg-config support" ON)
+# option (WITH_SYMBOLIZE "Enable symbolize module" ON)
+# option (WITH_THREADS "Enable multithreading support" ON)
+# option (WITH_TLS "Enable Thread Local Storage (TLS) support" ON)
+# option (WITH_UNWIND "Enable libunwind support" ON)
+
+  add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/../third_party/glog)
+  # include_directories(BEFORE SYSTEM ${CMAKE_CURRENT_LIST_DIR}/../third_party/gflags)
+
+  # Recover build options.
+  # set(BUILD_SHARED_LIBS ${TEMP_BUILD_SHARED_LIBS} CACHE BOOL "Build shared libs" FORCE)
+  set(WITH_CUSTOM_PREFIX ${TEMP_WITH_CUSTOM_PREFIX} CACHE BOOL " " FORCE)
+  set(WITH_GFLAGS ${TEMP_WITH_GFLAGS} CACHE BOOL " " FORCE)
+  set(WITH_GTEST ${TEMP_WITH_GTEST} CACHE BOOL " " FORCE)
+  set(WITH_PKGCONFIG ${TEMP_WITH_PKGCONFIG} CACHE BOOL " " FORCE)
+  set(WITH_SYMBOLIZE ${TEMP_WITH_SYMBOLIZE} CACHE BOOL " " FORCE)
+endif()
+list(APPEND Caffe2_DEPENDENCY_LIBS gflags)
+
 # ---[ Googletest and benchmark
 if(BUILD_TEST)
   # Preserve build options.
