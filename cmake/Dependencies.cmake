@@ -48,16 +48,23 @@ endif()
 
 # ---[ gflags
 if (USE_GFLAGS)
+  set(TEMP_BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS})
+  set(TEMP_BUILD_STATIC_LIBS ${BUILD_STATIC_LIBS})
+  set(BUILD_SHARED_LIBS ON CACHE BOOL "Build shared libs" FORCE)
+  set(BUILD_STATIC_LIBS OFF CACHE BOOL "Build shared libs" FORCE)
   add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/../third_party/gflags)
   # 不需要设置头文件的位置也可以找到，gflags的头文件
   # include_directories(BEFORE SYSTEM ${CMAKE_CURRENT_LIST_DIR}/../third_party/gflags)
+
+  set(BUILD_SHARED_LIBS ${TEMP_BUILD_SHARED_LIBS} CACHE BOOL "Build shared libs" FORCE)
+  set(BUILD_STATIC_LIBS ${TEMP_BUILD_STATIC_LIBS} CACHE BOOL "Build shared libs" FORCE)
 endif()
 list(APPEND Caffe2_DEPENDENCY_LIBS gflags)
 
 # ---[ gflags
 if (USE_GLOG)
   # Preserve build options.
-  set(TEMP_BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS})
+  # set(TEMP_BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS})
   set(TEMP_WITH_CUSTOM_PREFIX ${WITH_CUSTOM_PREFIX})
   set(TEMP_WITH_GFLAGS ${WITH_GFLAGS})
   set(TEMP_WITH_GTEST ${WITH_GTEST})
