@@ -1,5 +1,6 @@
 #include <c10/util/numa.h>
 
+#include <cassert>
 C10_DEFINE_bool(caffe2_cpu_numa_enabled, false, "Use NUMA whenever possible.");
 
 #if defined(__linux__) && defined(C10_USE_NUMA)
@@ -77,7 +78,7 @@ void NUMAMove(void* ptr, size_t size, int numa_node_id) {
       ((reinterpret_cast<uintptr_t>(ptr)) & ~(getpagesize() - 1));
   ptrdiff_t offset = reinterpret_cast<uintptr_t>(ptr) - page_start_ptr;
   // Avoid extra dynamic allocation and NUMA api calls
-  static_assert(
+  assert(
       numa_node_id >= 0 &&
       static_cast<unsigned>(numa_node_id) < sizeof(unsigned long) * 8);
   unsigned long mask = 1UL << numa_node_id;
