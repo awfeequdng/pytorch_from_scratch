@@ -1,4 +1,5 @@
 #include <c10/util/Exception.h>
+#include <c10/util/Type.h>
 
 namespace c10
 {
@@ -69,5 +70,54 @@ void Error::add_context(std::string new_msg) {
     // accessed across multiple threads
     refresh_what();
 }
+
+std::string GetExceptionString(const std::exception& e) {
+#ifdef __GXX_RTTI
+  return demangle(typeid(e).name()) + ": " + e.what();
+#else
+  return std::string("Exception (no RTTI available): ") + e.what();
+#endif // __GXX_RTTI
+}
+
+
+namespace detail {
+
+void torchCheckFail(
+    const char* func,
+    const char* file,
+    uint32_t line,
+    const std::string& msg) {
+  throw ::c10::Error({func, file, line}, msg);
+}
+
+void torchCheckFail(
+    const char* func,
+    const char* file,
+    uint32_t line,
+    const char* msg) {
+  throw ::c10::Error({func, file, line}, msg);
+}
+
+void torchInternalAssertFail(
+    const char* func,
+    const char* file,
+    uint32_t line,
+    const char* condMsg,
+    const char* userMsg) {
+  torchCheckFail(func, file, line, c10::str(condMsg, userMsg));
+}
+
+// This should never be called. It is provided in case of compilers
+// that don't do any dead code stripping in debug builds.
+void torchInternalAssertFail(
+    const char* func,
+    const char* file,
+    uint32_t line,
+    const char* condMsg,
+    const std::string& userMsg) {
+  torchCheckFail(func, file, line, c10::str(condMsg, userMsg));
+}
+
+} // namespace detail
 
 } // namespace c10
