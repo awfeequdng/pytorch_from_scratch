@@ -101,7 +101,25 @@ if (USE_GLOG)
   set(WITH_PKGCONFIG ${TEMP_WITH_PKGCONFIG} CACHE BOOL " " FORCE)
   set(WITH_SYMBOLIZE ${TEMP_WITH_SYMBOLIZE} CACHE BOOL " " FORCE)
 endif()
-list(APPEND Caffe2_DEPENDENCY_LIBS gflags)
+list(APPEND Caffe2_DEPENDENCY_LIBS glog::glog)
+
+
+# ---[ NUMA
+if(USE_NUMA)
+  if(LINUX)
+    find_package(Numa)
+    if(NUMA_FOUND)
+      include_directories(SYSTEM ${Numa_INCLUDE_DIR})
+      list(APPEND Caffe2_DEPENDENCY_LIBS ${Numa_LIBRARIES})
+    else()
+      message(WARNING "Not compiling with NUMA. Suppress this warning with -DUSE_NUMA=OFF")
+      caffe2_update_option(USE_NUMA OFF)
+    endif()
+  else()
+    message(WARNING "NUMA is currently only supported under Linux.")
+    caffe2_update_option(USE_NUMA OFF)
+  endif()
+endif()
 
 # ---[ Googletest and benchmark
 if(BUILD_TEST)
