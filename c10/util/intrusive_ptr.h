@@ -15,6 +15,10 @@ struct DontIncreaseRefcount {};
 } // namespace raw
 
 class intrusive_ptr_target {
+
+    template <class TTarget, class NullType>
+    friend class intrusive_ptr;
+
     mutable std::atomic<size_t> refcount_;
     mutable std::atomic<size_t> weakcount_;
 
@@ -363,8 +367,8 @@ public:
         return ret;
     }
 
-    template <class...Args>
-    static intrusive_ptr make(Args&... args) {
+    template <class... Args>
+    static intrusive_ptr make(Args&&... args) {
         return intrusive_ptr(new TTarget(std::forward<Args>(args)...));
     }
 
@@ -382,7 +386,6 @@ public:
         return intrusive_ptr(raw_ptr);
     }
 };
-
 
 template <
     class TTarget,
