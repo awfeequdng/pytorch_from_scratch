@@ -93,3 +93,9 @@
 // suppress an unused variable.
 #define C10_UNUSED __attribute__((__unused__))
 
+namespace c10 {} // namespace c10
+
+namespace at {
+using namespace c10;
+}
+

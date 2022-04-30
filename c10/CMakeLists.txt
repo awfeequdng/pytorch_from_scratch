@@ -23,8 +23,7 @@ file(GLOB C10_SRCS
     # core/boxing/impl/*.cpp
     # core/dispatch/*.cpp
     # core/op_registration/*.cpp
-    # core/impl/*.cpp
-    # mobile/*.cpp
+    core/impl/*.cpp
     # macros/*.cpp
     util/*.cpp
     )
