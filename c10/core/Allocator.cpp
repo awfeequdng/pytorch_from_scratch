@@ -35,4 +35,26 @@ at::Allocator* GetAllocator(const at::DeviceType& t) {
   return alloc;
 }
 
+bool memoryProfilingEnabled() {
+  auto* reporter_ptr = static_cast<MemoryReportingInfoBase*>(
+      ThreadLocalDebugInfo::get(DebugInfoKind::PROFILER_STATE));
+  return reporter_ptr && reporter_ptr->memoryProfilingEnabled();
+}
+
+void reportMemoryUsageToProfiler(
+    void* ptr,
+    int64_t alloc_size,
+    int64_t total_allocated,
+    int64_t total_reserved,
+    Device device) {
+  auto* reporter_ptr = static_cast<MemoryReportingInfoBase*>(
+      ThreadLocalDebugInfo::get(DebugInfoKind::PROFILER_STATE));
+  if (reporter_ptr) {
+    reporter_ptr->reportMemoryUsage(
+        ptr, alloc_size, total_allocated, total_reserved, device);
+  }
+}
+
+MemoryReportingInfoBase::MemoryReportingInfoBase() = default;
+
 } // namespace c10

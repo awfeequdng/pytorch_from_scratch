@@ -6,6 +6,7 @@
 #include <c10/core/Device.h>
 #include <c10/util/Exception.h>
 #include <c10/util/UniqueVoidPtr.h>
+#include <c10/util/ThreadLocalDebugInfo.h>
 
 namespace c10 {
 
@@ -221,36 +222,36 @@ struct AllocatorRegisterer {
   static AllocatorRegisterer<t> g_allocator_d(f); \
   }
 
-// // An interface for reporting thread local memory usage
-// // per device
-// struct MemoryReportingInfoBase : public c10::DebugInfoBase {
-//   MemoryReportingInfoBase();
-//   virtual ~MemoryReportingInfoBase() {}
+// An interface for reporting thread local memory usage
+// per device
+struct MemoryReportingInfoBase : public c10::DebugInfoBase {
+  MemoryReportingInfoBase();
+  virtual ~MemoryReportingInfoBase() {}
 
-//   /**
-//    * alloc_size corresponds to the size of the ptr.
-//    *
-//    * total_allocated corresponds to total allocated memory.
-//    *
-//    * total_reserved corresponds to total size of memory pool, both used and
-//    * unused, if applicable.
-//    */
-//   virtual void reportMemoryUsage(
-//       void* ptr,
-//       int64_t alloc_size,
-//       int64_t total_allocated,
-//       int64_t total_reserved,
-//       Device device) = 0;
+  /**
+   * alloc_size corresponds to the size of the ptr.
+   *
+   * total_allocated corresponds to total allocated memory.
+   *
+   * total_reserved corresponds to total size of memory pool, both used and
+   * unused, if applicable.
+   */
+  virtual void reportMemoryUsage(
+      void* ptr,
+      int64_t alloc_size,
+      int64_t total_allocated,
+      int64_t total_reserved,
+      Device device) = 0;
 
-//   virtual bool memoryProfilingEnabled() const = 0;
-// };
+  virtual bool memoryProfilingEnabled() const = 0;
+};
 
-// bool memoryProfilingEnabled();
-//  wvoid reportMemoryUsageToProfiler(
-//     void* ptr,
-//     int64_t alloc_size,
-//     int64_t total_allocated,
-//     int64_t total_reserved,
-//     Device device);
+bool memoryProfilingEnabled();
+void reportMemoryUsageToProfiler(
+    void* ptr,
+    int64_t alloc_size,
+    int64_t total_allocated,
+    int64_t total_reserved,
+    Device device);
 
 } // namespace c10
