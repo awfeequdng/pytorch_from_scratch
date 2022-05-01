@@ -132,7 +132,7 @@ if(BUILD_TEST)
   # For gtest, we will simply embed it into our test binaries, so we won't
   # need to install it.
   set(INSTALL_GTEST OFF CACHE BOOL "Install gtest." FORCE)
-  set(BUILD_GMOCK ON CACHE BOOL "Build gmock." FORCE)
+  # set(BUILD_GMOCK ON CACHE BOOL "Build gmock." FORCE)
   # For Windows, we will check the runtime used is correctly passed in.
   if(NOT CAFFE2_USE_MSVC_STATIC_RUNTIME)
       set(gtest_force_shared_crt ON CACHE BOOL "force shared crt on gtest" FORCE)
@@ -151,24 +151,24 @@ if(BUILD_TEST)
   set_property(DIRECTORY PROPERTY INCLUDE_DIRECTORIES ${INC_DIR_temp})
 
   include_directories(BEFORE SYSTEM ${CMAKE_CURRENT_LIST_DIR}/../third_party/googletest/googletest/include)
-  include_directories(BEFORE SYSTEM ${CMAKE_CURRENT_LIST_DIR}/../third_party/googletest/googlemock/include)
+  # include_directories(BEFORE SYSTEM ${CMAKE_CURRENT_LIST_DIR}/../third_party/googletest/googlemock/include)
 
-  # We will not need to test benchmark lib itself.
-  set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "Disable benchmark testing as we don't need it.")
-  # We will not need to install benchmark since we link it statically.
-  set(BENCHMARK_ENABLE_INSTALL OFF CACHE BOOL "Disable benchmark install to avoid overwriting vendor install.")
-  if(NOT USE_SYSTEM_BENCHMARK)
-    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/../third_party/benchmark)
-  else()
-    add_library(benchmark SHARED IMPORTED)
-    find_library(BENCHMARK_LIBRARY benchmark)
-    if(NOT BENCHMARK_LIBRARY)
-      message(FATAL_ERROR "Cannot find google benchmark library")
-    endif()
-    message("-- Found benchmark: ${BENCHMARK_LIBRARY}")
-    set_property(TARGET benchmark PROPERTY IMPORTED_LOCATION ${BENCHMARK_LIBRARY})
-  endif()
-  include_directories(${CMAKE_CURRENT_LIST_DIR}/../third_party/benchmark/include)
+  # # We will not need to test benchmark lib itself.
+  # set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "Disable benchmark testing as we don't need it.")
+  # # We will not need to install benchmark since we link it statically.
+  # set(BENCHMARK_ENABLE_INSTALL OFF CACHE BOOL "Disable benchmark install to avoid overwriting vendor install.")
+  # if(NOT USE_SYSTEM_BENCHMARK)
+  #   add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/../third_party/benchmark)
+  # else()
+  #   add_library(benchmark SHARED IMPORTED)
+  #   find_library(BENCHMARK_LIBRARY benchmark)
+  #   if(NOT BENCHMARK_LIBRARY)
+  #     message(FATAL_ERROR "Cannot find google benchmark library")
+  #   endif()
+  #   message("-- Found benchmark: ${BENCHMARK_LIBRARY}")
+  #   set_property(TARGET benchmark PROPERTY IMPORTED_LOCATION ${BENCHMARK_LIBRARY})
+  # endif()
+  # include_directories(${CMAKE_CURRENT_LIST_DIR}/../third_party/benchmark/include)
 
   # Recover build options.
   set(BUILD_SHARED_LIBS ${TEMP_BUILD_SHARED_LIBS} CACHE BOOL "Build shared libs" FORCE)
