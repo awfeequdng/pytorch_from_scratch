@@ -169,7 +169,15 @@ constexpr uint32_t CUDA_THREADS_PER_BLOCK_FALLBACK = 256;
 // todo: 暂时将这个宏的内容设置为空
 #define CUDA_KERNEL_ASSERT(cond)
 
+// todo: 暂时不知道设置这些宏的值，先使用如下值吧，有问题再回来修改
+#define CONSTEXPR_EXCEPT_WIN_CUDA constexpr
+#define C10_HOST_CONSTEXPR_EXCEPT_WIN_CUDA constexpr
+
 namespace c10 {} // namespace c10
+
+namespace caffe2 {
+using namespace c10;
+}
 
 namespace at {
 using namespace c10;
