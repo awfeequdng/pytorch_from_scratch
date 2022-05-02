@@ -6,7 +6,7 @@
 #include <functional>
 #include <string_view>
 #include <iostream>
-#include <c10/util/Exception.h>
+#include <stdexcept>
 
 namespace c10 {
 namespace util {
