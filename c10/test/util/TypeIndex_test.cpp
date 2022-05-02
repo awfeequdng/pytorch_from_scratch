@@ -89,9 +89,10 @@ static_assert(
     "");
 #endif
 TEST(TypeIndex, NestedName) {
-    std::cout << "type_name of type_Dummp: "
+    std::cout << "type_name of Dummp: "
               << get_fully_qualified_type_name<Dummy>()
               << std::endl;
+    std::cout << "type_index of Dummp " << get_type_index<Dummy>() << std::endl;
     test_pretty_function<Dummy>();
   EXPECT_NE(
       string_view::npos,
