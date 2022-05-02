@@ -2,7 +2,7 @@
 #include <atomic>
 #include <cstddef>
 #include <climits>
-
+#include <memory>
 #include <c10/util/Exception.h>
 // #include <c10/util/MaybeOwned.h>
 
