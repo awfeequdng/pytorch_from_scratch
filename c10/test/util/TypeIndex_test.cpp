@@ -69,8 +69,13 @@ TEST(TypeIndex, TopLevelName) {
 namespace test_nested_name {
 struct Dummy final {};
 
+#define string_fy(x) #x
 template<class T>
 string_view test_pretty_function() {
+
+    std::cout << "C10_TYPENAME_SUPPORTS_CONSTEXPR: " << C10_TYPENAME_SUPPORTS_CONSTEXPR << std::endl;
+    std::cout << "C10_TYPENAME_CONSTEXPR: " << string_fy(C10_TYPENAME_CONSTEXPR) << std::endl;
+
     std::cout << "__pretty_function: "
               << __PRETTY_FUNCTION__
               << std::endl;
