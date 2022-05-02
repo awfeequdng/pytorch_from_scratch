@@ -5,6 +5,8 @@
 #include <cinttypes>
 #include <functional>
 #include <string_view>
+#include <iostream>
+
 namespace c10 {
 namespace util {
 
