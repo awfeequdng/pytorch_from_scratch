@@ -5,7 +5,8 @@
 // Android NDK platform < 21 with libstdc++ has spotty C++11 support.
 // Various hacks in this header allow the rest of the codebase to use
 // standard APIs.
-#if defined(__GLIBCXX__) || defined(__NEWLIB__)
+#if (defined(__ANDROID__) && __ANDROID_API__ < 21 && defined(__GLIBCXX__)) || \
+    defined(__NEWLIB__)
 #include <stdexcept>
 
 namespace std {
