@@ -96,7 +96,7 @@ inline C10_TYPENAME_CONSTEXPR std::string_view fully_qualified_type_name_impl() 
 #else
       "std::string_view c10::util::detail::fully_qualified_type_name_impl() [with T = ",
 #endif
-      "; std::string_view = c10::basic_string_view<char>]",
+      "; std::string_view = std::basic_string_view<char>]",
       __PRETTY_FUNCTION__);
 #endif
 }
