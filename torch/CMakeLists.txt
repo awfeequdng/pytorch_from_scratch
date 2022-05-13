@@ -53,7 +53,7 @@ if (APPLE)
     string(APPEND TORCH_PYTHON_LINK_FLAGS " -undefined dynamic_lookup")
 else()
     # todo: 一下这三个参数用来干嘛？？？
-    list(APPLE TORCH_PYTHON_COMPILE_OPTIONS
+    list(APPEND TORCH_PYTHON_COMPILE_OPTIONS
         -fno-strict-aliasing
         -Wno-write-strings
         -Wno-strict-aliasing)
