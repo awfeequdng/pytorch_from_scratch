@@ -1,6 +1,5 @@
 #include <c10/core/DispatchKey.h>
-#include <c10/util/Exception.h>
-// #include <c10/core/DispatchKeySet.h>
+#include <c10/core/DispatchKeySet.h>
 
 #include <unordered_map>
 
@@ -22,8 +21,8 @@ const char* toString(BackendComponent t) {
       return "XPUBit";
     case BackendComponent::IPUBit:
       return "IPUBit";
-    case BackendComponent::MLCBit:
-      return "MLCBit";
+    case BackendComponent::MPSBit:
+      return "MPSBit";
     case BackendComponent::HPUBit:
       return "HPUBit";
     case BackendComponent::VEBit:
@@ -65,8 +64,8 @@ const char* toString(DispatchKey t) {
       return "XLA";
     case DispatchKey::Lazy:
       return "Lazy";
-    case DispatchKey::MLC:
-      return "MLC";
+    case DispatchKey::MPS:
+      return "MPS";
     case DispatchKey::HPU:
       return "HPU";
     case DispatchKey::Vulkan:
@@ -102,6 +101,10 @@ const char* toString(DispatchKey t) {
 
     case DispatchKey::NestedTensor:
       return "NestedTensor";
+    case DispatchKey::NestedTensorCPU:
+      return "NestedTensorCPU";
+    case DispatchKey::NestedTensorCUDA:
+      return "NestedTensorCUDA";
 
     case DispatchKey::Python:
       return "Python";
@@ -139,8 +142,8 @@ const char* toString(DispatchKey t) {
       return "AutogradXLA";
     case DispatchKey::AutogradLazy:
       return "AutogradLazy";
-    case DispatchKey::AutogradMLC:
-      return "AutogradMLC";
+    case DispatchKey::AutogradMPS:
+      return "AutogradMPS";
     case DispatchKey::AutogradHPU:
       return "AutogradHPU";
     case DispatchKey::AutogradPrivateUse1:
@@ -174,6 +177,9 @@ const char* toString(DispatchKey t) {
 
     case DispatchKey::AutocastCPU:
       return "AutocastCPU";
+
+    case DispatchKey::AutocastXPU:
+      return "AutocastXPU";
 
     case DispatchKey::Batched:
       return "Batched";
@@ -210,6 +216,12 @@ const char* toString(DispatchKey t) {
     case DispatchKey::FuncTorchBatched:
       return "FuncTorchBatched";
 
+    // Out-of-core torchdistX dispatch keys
+    case DispatchKey::Fake:
+      return "Fake";
+    case DispatchKey::DeferredInit:
+      return "DeferredInit";
+
     case DispatchKey::Dense:
       return "Dense";
     case DispatchKey::Quantized:
@@ -231,16 +243,16 @@ std::ostream& operator<<(std::ostream& str, BackendComponent rhs) {
   return str << toString(rhs);
 }
 
-// DispatchKey getAutogradKeyFromBackend(BackendComponent k) {
-//   // We want this to return an autograd key. We're relying on the fact that
-//   // getAutogradRelatedKeySetFromBackend returns an autograd key +
-//   // ADInplaceOrView, and autograd has higher precedence. The core mapping from
-//   // backend -> autograd key lives in `getAutogradRelatedKeySetFromBackend`
-//   // instead of here for performance. `getAutogradRelatedKeySetFromBackend` is a
-//   // hotpath function, and we want to make sure that it doesn't have to
-//   // construct any DispatchKeySets at runtime.
-//   return getAutogradRelatedKeySetFromBackend(k).highestPriorityTypeId();
-// }
+DispatchKey getAutogradKeyFromBackend(BackendComponent k) {
+  // We want this to return an autograd key. We're relying on the fact that
+  // getAutogradRelatedKeySetFromBackend returns an autograd key +
+  // ADInplaceOrView, and autograd has higher precedence. The core mapping from
+  // backend -> autograd key lives in `getAutogradRelatedKeySetFromBackend`
+  // instead of here for performance. `getAutogradRelatedKeySetFromBackend` is a
+  // hotpath function, and we want to make sure that it doesn't have to
+  // construct any DispatchKeySets at runtime.
+  return getAutogradRelatedKeySetFromBackend(k).highestPriorityTypeId();
+}
 
 c10::DispatchKey parseDispatchKey(const std::string& k) {
   static std::unordered_map<std::string, c10::DispatchKey> key_map = {
@@ -261,6 +273,7 @@ c10::DispatchKey parseDispatchKey(const std::string& k) {
       {"BackendSelect", c10::DispatchKey::BackendSelect},
       {"Python", c10::DispatchKey::Python},
       {"PythonTLSSnapshot", c10::DispatchKey::PythonTLSSnapshot},
+      {"Fake", c10::DispatchKey::Fake},
       {"Named", c10::DispatchKey::Named},
       {"Conjugate", c10::DispatchKey::Conjugate},
       {"Negative", c10::DispatchKey::Negative},
@@ -273,11 +286,13 @@ c10::DispatchKey parseDispatchKey(const std::string& k) {
       {"AutogradNestedTensor", c10::DispatchKey::AutogradNestedTensor},
       {"Tracer", c10::DispatchKey::Tracer},
       {"AutocastCPU", c10::DispatchKey::AutocastCPU},
+      {"AutocastXPU", c10::DispatchKey::AutocastXPU},
       {"AutocastCUDA", c10::DispatchKey::AutocastCUDA},
       {"FuncTorchBatched", c10::DispatchKey::FuncTorchBatched},
       {"FuncTorchVmapMode", c10::DispatchKey::FuncTorchVmapMode},
       {"Batched", c10::DispatchKey::Batched},
       {"VmapMode", c10::DispatchKey::VmapMode},
+      {"DeferredInit", c10::DispatchKey::DeferredInit},
       {"FuncTorchGradWrapper", c10::DispatchKey::FuncTorchGradWrapper},
       {"FuncTorchDynamicLayerFrontMode",
        c10::DispatchKey::FuncTorchDynamicLayerFrontMode},
@@ -289,12 +304,14 @@ c10::DispatchKey parseDispatchKey(const std::string& k) {
       {"CUDA", c10::DispatchKey::CUDA},
       {"HIP", c10::DispatchKey::HIP},
       {"XLA", c10::DispatchKey::XLA},
-      {"MLC", c10::DispatchKey::MLC},
+      {"MPS", c10::DispatchKey::MPS},
       {"XPU", c10::DispatchKey::XPU},
       {"IPU", c10::DispatchKey::IPU},
       {"HPU", c10::DispatchKey::HPU},
       {"Lazy", c10::DispatchKey::Lazy},
       {"NestedTensor", c10::DispatchKey::NestedTensor},
+      {"NestedTensorCPU", c10::DispatchKey::NestedTensorCPU},
+      {"NestedTensorCUDA", c10::DispatchKey::NestedTensorCUDA},
       {"PrivateUse1", c10::DispatchKey::PrivateUse1},
       {"PrivateUse2", c10::DispatchKey::PrivateUse2},
       {"PrivateUse3", c10::DispatchKey::PrivateUse3},
@@ -315,7 +332,7 @@ c10::DispatchKey parseDispatchKey(const std::string& k) {
       {"AutogradLazy", c10::DispatchKey::AutogradLazy},
       {"AutogradIPU", c10::DispatchKey::AutogradIPU},
       {"AutogradXPU", c10::DispatchKey::AutogradXPU},
-      {"AutogradMLC", c10::DispatchKey::AutogradMLC},
+      {"AutogradMPS", c10::DispatchKey::AutogradMPS},
       {"AutogradHPU", c10::DispatchKey::AutogradHPU},
       {"AutogradPrivateUse1", c10::DispatchKey::AutogradPrivateUse1},
       {"AutogradPrivateUse2", c10::DispatchKey::AutogradPrivateUse2},
