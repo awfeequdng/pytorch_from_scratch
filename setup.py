@@ -400,8 +400,8 @@ def configure_extension_build():
     library_dirs.append(lib_path)
 
     main_compile_args = []
-    # main_libraries = ['torch_python']
-    main_libraries = []
+    main_libraries = ['torch_python']
+    # main_libraries = []
     main_link_args = []
     main_sources = ["torch/csrc/stub.c"]
     if cmake_cache_vars['USE_CUDA']:

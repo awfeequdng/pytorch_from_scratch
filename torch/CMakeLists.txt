@@ -1,7 +1,5 @@
-cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
-
-project(torch CXX C)
-
+# cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
+# project(torch CXX C)
 
 set(TORCH_SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 set(TORCH_ROOT "${TORCH_SRC_DIR}/..")
@@ -20,6 +18,8 @@ message("CMAKE_BINARY_DIR: ${CMAKE_BINARY_DIR}")
 
 
 set(TORCH_PYTHON_SRCS ${GENERATED_CXX_PYTHON})
+append_filelist("libtorch_python_core_sources" TORCH_PYTHON_SRCS)
+
 
 set(TORCH_PYTHON_INCLUDE_DIRECTORIES
     ${PYTHON_INCLUDE_DIR}
@@ -27,16 +27,22 @@ set(TORCH_PYTHON_INCLUDE_DIRECTORIES
     ${TORCH_ROOT}
 
     ${CMAKE_BINARY_DIR}
+    ${CMAKE_BINARY_DIR}/third_party/gflags/include
+    ${CMAKE_BINARY_DIR}/third_party/glog
 
     ${TORCH_ROOT}/third_party
+    ${TORCH_ROOT}/third_party/glog/src
 
     ${TORCH_SRC_DIR}/csrc
 )
 
+# set(TORCH_PYTHON_LINK_LIBRARIES
+#     python::python
+#     pybind::pybind11
+#     fmt::fmt-header-only)
 set(TORCH_PYTHON_LINK_LIBRARIES
     python::python
-    pybind::pybind11
-    fmt::fmt-header-only)
+    pybind::pybind11)
 
 set(TORCH_PYTHON_COMPILE_OPTIONS)
 
@@ -59,51 +65,6 @@ if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
         -Wno-writable-strings)
 endif()
 
-# if(USE_DISTRIBUTED)
-# endif()
-
-if(USE_DEPLOY)
-    add_library(torch_python_obj OBJECT ${TORCH_PYTHON_SRCS})
-    target_compile_options(torch_python_obj PRIVATE -Wno-unused-variable)
-    target_compile_options(torch_python_obj PRIVATE ${TORCH_PYTHON_COMPILE_OPTIONS})
-
-    if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-            # todo: 该编译参数什么意思？？？？
-        target_compile_options(torch_python_obj PRIVATE -fno-gnu-unique)
-    endif()
-
-    target_include_directories(torch_python_obj PUBLIC ${TORCH_PYTHON_INCLUDE_DIRECTORIES})
-    # target_include_directories(torch_python_obj PRIVATE ../third_party/fmt/include)
-
-    # add_dependencies(torch_python_obj onnx)
-
-    target_include_directories(torch_python_obj SYSTEM PRIVATE
-        ${PYTHON_INCLUDE_DIRS}
-        ${pybind11_INCLUDE_DIRS})
-
-    if(HAVE_SOVERSION)
-        set_target_properties(torch_python_obj PROPERTIES
-            VERSION ${TORCH_VERSION}
-            SOVERSION ${TORCH_SOVERSION}
-        )
-    endif()
-
-    # add_dependencies(torch_python_obj torch_python_stubs)
-
-    # Required workaround for generated sources
-    # See https://samthursfield.wordpress.com/2015/11/21/cmake-dependencies-between-targets-and-files-and-custom-commands/#custom-commands-in-different-directories
-    # add_dependencies(torch_python_obj generate-torch-sources)
-
-    # set_source_files_properties(
-        # ${GENERATED_CXX_PYTHON}
-        # PROPERTIES GENERATED TRUE
-        # )
-
-    # add_dependencies(torch_python_obj gen_torch_version)
-
-endif()
-
-
 add_library(torch_python SHARED ${TORCH_PYTHON_SRCS})
 
 list(APPEND TORCH_PYTHON_COMPILE_DEFINITIONS BUILD_CAFFE2)
@@ -123,7 +84,8 @@ target_compile_options(torch_python PRIVATE -Wno-unused-variable)
 
 target_compile_definitions(torch_python PRIVATE "-DTHP_BUILD_MAIN_LIB")
 
-target_link_libraries(torch_python PRIVATE torch_library ${TORCH_PYTHON_LINK_LIBRARIES})
+target_link_libraries(torch_python PRIVATE ${TORCH_PYTHON_LINK_LIBRARIES})
+# target_link_libraries(torch_python PRIVATE torch_library ${TORCH_PYTHON_LINK_LIBRARIES})
 
 target_compile_definitions(torch_python PRIVATE ${TORCH_PYTHON_COMPILE_DEFINITIONS})
 
@@ -132,3 +94,5 @@ target_compile_definitions(torch_python PUBLIC ${TORCH_PYTHON_PUBLIC_COMPILE_DEF
 target_compile_options(torch_python PRIVATE ${TORCH_PYTHON_COMPILE_OPTIONS})
 
 target_include_directories(torch_python PUBLIC ${TORCH_PYTHON_INCLUDE_DIRECTORIES})
+
+install(TARGETS torch_python DESTINATION "${TORCH_INSTALL_LIB_DIR}")

@@ -1,7 +1,9 @@
+#include <c10/util/Logging.h>
+
 #include <Python.h>
 #include <iostream>
-
 #include <vector>
+
 // #include <torch/csrc/utils.h>
 void THPUtils_addPyMethodDefs(std::vector<PyMethodDef>& vector, PyMethodDef* methods);
 
@@ -36,7 +38,7 @@ static PyMethodDef TorchMethods[] = {
 };
 
 extern "C" PyObject* initModule() {
-
+    c10::initLogging();
 #define ASSERT_TRUE(cmd) if (!(cmd)) return nullptr
     THPUtils_addPyMethodDefs(methods, TorchMethods);
 
