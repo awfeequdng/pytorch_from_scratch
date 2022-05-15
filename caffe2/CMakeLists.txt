@@ -4,6 +4,8 @@ include(../cmake/Codegen.cmake)
 # 在根目录的CMakelists.txt中已经包含了该文件
 # include(../cmake/public/utils.cmake)
 
+add_subdirectory(core)
+add_subdirectory(utils)
 
 # This is required for older versions of CMake, which don't allow
 # specifying add_library() without a list of source files
