@@ -1,7 +1,7 @@
 if(NOT BUILD_CAFFE2)
-  # list(APPEND Caffe2_CPU_SRCS
-    # "${CMAKE_CURRENT_SOURCE_DIR}/common.cc"
-  # )
+  list(APPEND Caffe2_CPU_SRCS
+    "${CMAKE_CURRENT_SOURCE_DIR}/common.cc"
+  )
   set(Caffe2_CPU_SRCS ${Caffe2_CPU_SRCS} PARENT_SCOPE)
   return()
 endif()

@@ -1,6 +1,7 @@
 #pragma once
 #include <cstdint>
 
+#include "caffe2/core/common.h"
 #include "caffe2/macros/export.hh"
 
 namespace caffe2 {

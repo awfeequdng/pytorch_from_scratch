@@ -28,9 +28,9 @@ function(filter_list_exclude output input)
 endfunction()
 
 # ---[ Write the macros file
-# configure_file(
-#     ${CMAKE_CURRENT_LIST_DIR}/../caffe2/core/macros.h.in
-#     ${CMAKE_BINARY_DIR}/caffe2/core/macros.h)
+configure_file(
+    ${CMAKE_CURRENT_LIST_DIR}/../caffe2/core/macros.h.in
+    ${CMAKE_BINARY_DIR}/caffe2/core/macros.h)
 
 # ---[ Installing the header files
 # install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/../caffe2

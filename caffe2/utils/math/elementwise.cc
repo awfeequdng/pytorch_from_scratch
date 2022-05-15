@@ -169,71 +169,71 @@ DELEGATE_SIMPLE_UNARY_FUNCTION(float, Inv, inverse)
 DELEGATE_SIMPLE_UNARY_FUNCTION(double, Inv, inverse)
 // #undef DELEGATE_SIMPLE_UNARY_FUNCTION
 
-#define PXML_SPECIALIZED_SINH(T)                                          \
+#define CAFFE2_SPECIALIZED_SINH(T)                                          \
   template <>                                                             \
   EXPORT void Sinh<T, CPUContext>(                                        \
       const int N, const T* X, T* Y, CPUContext* /* context */) {         \
     ConstEigenVectorArrayMap<T> X_arr(X, N);                              \
     EigenVectorArrayMap<T>(Y, N) = (X_arr.exp() - (-X_arr).exp()) / T(2); \
   }
-PXML_SPECIALIZED_SINH(float)
-PXML_SPECIALIZED_SINH(double)
-#undef PXML_SPECIALIZED_SINH
+CAFFE2_SPECIALIZED_SINH(float)
+CAFFE2_SPECIALIZED_SINH(double)
+#undef CAFFE2_SPECIALIZED_SINH
 
-#define PXML_SPECIALIZED_COSH(T)                                          \
+#define CAFFE2_SPECIALIZED_COSH(T)                                          \
   template <>                                                             \
   EXPORT void Cosh<T, CPUContext>(                                        \
       const int N, const T* X, T* Y, CPUContext* /* context */) {         \
     ConstEigenVectorArrayMap<T> X_arr(X, N);                              \
     EigenVectorArrayMap<T>(Y, N) = (X_arr.exp() + (-X_arr).exp()) / T(2); \
   }
-PXML_SPECIALIZED_COSH(float)
-PXML_SPECIALIZED_COSH(double)
-#undef PXML_SPECIALIZED_COSH
+CAFFE2_SPECIALIZED_COSH(float)
+CAFFE2_SPECIALIZED_COSH(double)
+#undef CAFFE2_SPECIALIZED_COSH
 
-#define PXML_SPECIALIZED_SINCOS(T)                                          \
+#define CAFFE2_SPECIALIZED_SINCOS(T)                                          \
   template <>                                                               \
   EXPORT void SinCos<T, CPUContext>(                                        \
       const int N, const T* X, T* S, T* C, CPUContext* /* context */) {     \
     EigenVectorArrayMap<T>(S, N) = ConstEigenVectorArrayMap<T>(X, N).sin(); \
     EigenVectorArrayMap<T>(C, N) = ConstEigenVectorArrayMap<T>(X, N).cos(); \
   }
-PXML_SPECIALIZED_SINCOS(float)
-PXML_SPECIALIZED_SINCOS(double)
-#undef PXML_SPECIALIZED_SINCOS
+CAFFE2_SPECIALIZED_SINCOS(float)
+CAFFE2_SPECIALIZED_SINCOS(double)
+#undef CAFFE2_SPECIALIZED_SINCOS
 
 
-#define PXML_SPECIALIZED_POWX(T)                                             \
+#define CAFFE2_SPECIALIZED_POWX(T)                                             \
   template <>                                                                \
   EXPORT void Powx<T, CPUContext>(                                       \
       const int N, const T* A, const T b, T* Y, CPUContext* /* context */) { \
     EigenVectorArrayMap<T>(Y, N) = ConstEigenVectorArrayMap<T>(A, N).pow(b); \
   }
-PXML_SPECIALIZED_POWX(float)
-PXML_SPECIALIZED_POWX(double)
-#undef PXML_SPECIALIZED_POWX
+CAFFE2_SPECIALIZED_POWX(float)
+CAFFE2_SPECIALIZED_POWX(double)
+#undef CAFFE2_SPECIALIZED_POWX
 
-#define PXML_SPECIALIZED_CBRT(T)                                    \
+#define CAFFE2_SPECIALIZED_CBRT(T)                                    \
   template <>                                                       \
   EXPORT void Cbrt<T, CPUContext>(                              \
       const int N, const T* X, T* Y, CPUContext* /* context */) {   \
     std::transform(X, X + N, Y, [](const T x) { return cbrt(x); }); \
   }
-PXML_SPECIALIZED_CBRT(float)
-PXML_SPECIALIZED_CBRT(double)
-#undef PXML_SPECIALIZED_CBRT
+CAFFE2_SPECIALIZED_CBRT(float)
+CAFFE2_SPECIALIZED_CBRT(double)
+#undef CAFFE2_SPECIALIZED_CBRT
 
-#define PXML_SPECIALIZED_ERF(T)                                    \
+#define CAFFE2_SPECIALIZED_ERF(T)                                    \
   template <>                                                      \
   EXPORT void Erf<T, CPUContext>(                              \
       const int N, const T* X, T* Y, CPUContext* /* context */) {  \
     std::transform(X, X + N, Y, [](const T x) { return erf(x); }); \
   }
-PXML_SPECIALIZED_ERF(float)
-PXML_SPECIALIZED_ERF(double)
-#undef PXML_SPECIALIZED_ERF
+CAFFE2_SPECIALIZED_ERF(float)
+CAFFE2_SPECIALIZED_ERF(double)
+#undef CAFFE2_SPECIALIZED_ERF
 
-#define PXML_SPECIALIZED_CDF_NORM(T)                              \
+#define CAFFE2_SPECIALIZED_CDF_NORM(T)                              \
   template <>                                                     \
   EXPORT void CdfNorm<T, CPUContext>(                         \
       const int N, const T* X, T* Y, CPUContext* /* context */) { \
@@ -242,9 +242,9 @@ PXML_SPECIALIZED_ERF(double)
       return (T(1) + erf(x * kRsqrt2)) * static_cast<T>(0.5);     \
     });                                                           \
   }
-PXML_SPECIALIZED_CDF_NORM(float)
-PXML_SPECIALIZED_CDF_NORM(double)
-#undef PXML_SPECIALIZED_CDF_NORM
+CAFFE2_SPECIALIZED_CDF_NORM(float)
+CAFFE2_SPECIALIZED_CDF_NORM(double)
+#undef CAFFE2_SPECIALIZED_CDF_NORM
 
 #define DELEGATE_SIMPLE_BINARY_FUNCTION_BY_EIGEN_OPERATOR(T, Func, EigenOp)   \
   template <>                                                                 \
@@ -263,7 +263,7 @@ DELEGATE_SIMPLE_BINARY_FUNCTION_BY_EIGEN_OPERATOR(float, Div, /)
 DELEGATE_SIMPLE_BINARY_FUNCTION_BY_EIGEN_OPERATOR(double, Div, /)
 #undef DELEGATE_SIMPLE_BINARY_FUNCTION_BY_EIGEN_OPERATOR
 
-#define PXML_SPECIALIZED_AXPBY(TAlpha, TData)                               \
+#define CAFFE2_SPECIALIZED_AXPBY(TAlpha, TData)                               \
   template <>                                                               \
   EXPORT void Axpby<TAlpha, TData, CPUContext>(                         \
       const std::int64_t N,                                                 \
@@ -288,14 +288,14 @@ DELEGATE_SIMPLE_BINARY_FUNCTION_BY_EIGEN_OPERATOR(double, Div, /)
     Y_arr = Y_arr * static_cast<TData>(*beta) +                             \
         ConstEigenVectorArrayMap<TData>(X, N) * static_cast<TData>(*alpha); \
   }
-PXML_SPECIALIZED_AXPBY(float, float)
-#undef PXML_SPECIALIZED_AXPBY
+CAFFE2_SPECIALIZED_AXPBY(float, float)
+#undef CAFFE2_SPECIALIZED_AXPBY
 
 #endif // CAFFE2_USE_MKL
 
-#ifdef PXML_USE_EIGEN_FOR_BLAS
+#ifdef CAFFE2_USE_EIGEN_FOR_BLAS
 
-#define PXML_SPECIALIZED_SCALE(TAlpha, TData)                                 \
+#define CAFFE2_SPECIALIZED_SCALE(TAlpha, TData)                                 \
   template <>                                                                 \
   EXPORT void Scale<TAlpha, TData, CPUContext>(                           \
       const std::int64_t N,                                                   \
@@ -324,12 +324,12 @@ PXML_SPECIALIZED_AXPBY(float, float)
           ConstEigenVectorArrayMap<TData>(X, N) * static_cast<TData>(*alpha); \
     }                                                                         \
   }
-PXML_SPECIALIZED_SCALE(float, float)
-PXML_SPECIALIZED_SCALE(double, double)
-PXML_SPECIALIZED_SCALE(float, double)
-#undef PXML_SPECIALIZED_SCALE
+CAFFE2_SPECIALIZED_SCALE(float, float)
+CAFFE2_SPECIALIZED_SCALE(double, double)
+CAFFE2_SPECIALIZED_SCALE(float, double)
+#undef CAFFE2_SPECIALIZED_SCALE
 
-#define PXML_SPECIALIZED_AXPY(TAlpha, TData)                                \
+#define CAFFE2_SPECIALIZED_AXPY(TAlpha, TData)                                \
   template <>                                                               \
   EXPORT void Axpy<TAlpha, TData, CPUContext>(                          \
       const std::int64_t N,                                                 \
@@ -350,11 +350,11 @@ PXML_SPECIALIZED_SCALE(float, double)
     EigenVectorArrayMap<TData>(Y, N) +=                                     \
         ConstEigenVectorArrayMap<TData>(X, N) * static_cast<TData>(*alpha); \
   }
-PXML_SPECIALIZED_AXPY(float, float)
-PXML_SPECIALIZED_AXPY(float, double)
-#undef PXML_SPECIALIZED_AXPY
+CAFFE2_SPECIALIZED_AXPY(float, float)
+CAFFE2_SPECIALIZED_AXPY(float, double)
+#undef CAFFE2_SPECIALIZED_AXPY
 
-#else // PXML_USE_EIGEN_FOR_BLAS
+#else // CAFFE2_USE_EIGEN_FOR_BLAS
 
 #ifdef CAFFE2_USE_MKL
 
@@ -478,7 +478,7 @@ DELEGATE_AXPY(float, float, cblas_saxpy)
 DELEGATE_AXPY(float, double, cblas_daxpy)
 #undef DELEGATE_AXPY
 
-#endif // PXML_USE_EIGEN_FOR_BLAS
+#endif // CAFFE2_USE_EIGEN_FOR_BLAS
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -487,7 +487,7 @@ DELEGATE_AXPY(float, double, cblas_daxpy)
 // Eigen or via custom code.
 ////////////////////////////////////////////////////////////////////////////////
 
-#define PXML_SPECIALIZED_SET(T)                                               \
+#define CAFFE2_SPECIALIZED_SET(T)                                               \
   template <>                                                                 \
   PXTORCH_API void Set<T, CPUContext>(                                        \
       const std::int64_t N, const T alpha, T* Y, CPUContext* /* context */) { \
@@ -500,17 +500,17 @@ DELEGATE_AXPY(float, double, cblas_daxpy)
       EigenVectorArrayMap<T>(Y, N).setConstant(alpha);                        \
     }                                                                         \
   }
-PXML_SPECIALIZED_SET(float)
-PXML_SPECIALIZED_SET(double)
-PXML_SPECIALIZED_SET(int)
-PXML_SPECIALIZED_SET(std::int8_t)
-PXML_SPECIALIZED_SET(std::int16_t)
-PXML_SPECIALIZED_SET(std::int64_t)
-PXML_SPECIALIZED_SET(bool)
-PXML_SPECIALIZED_SET(char)
-PXML_SPECIALIZED_SET(std::uint8_t)
-PXML_SPECIALIZED_SET(std::uint16_t)
-#undef PXML_SPECIALIZED_SET
+CAFFE2_SPECIALIZED_SET(float)
+CAFFE2_SPECIALIZED_SET(double)
+CAFFE2_SPECIALIZED_SET(int)
+CAFFE2_SPECIALIZED_SET(std::int8_t)
+CAFFE2_SPECIALIZED_SET(std::int16_t)
+CAFFE2_SPECIALIZED_SET(std::int64_t)
+CAFFE2_SPECIALIZED_SET(bool)
+CAFFE2_SPECIALIZED_SET(char)
+CAFFE2_SPECIALIZED_SET(std::uint8_t)
+CAFFE2_SPECIALIZED_SET(std::uint16_t)
+#undef CAFFE2_SPECIALIZED_SET
 
 
 #define DELEGATE_SIMPLE_UNARY_FUNCTION(T, Func, EigenFunc)        \
@@ -536,19 +536,19 @@ DELEGATE_SIMPLE_UNARY_FUNCTION(double, Cube, cube)
 #undef DELEGATE_SIMPLE_UNARY_FUNCTION
 
 
-#define PXML_SPECIALIZED_NEG(T)                                      \
+#define CAFFE2_SPECIALIZED_NEG(T)                                      \
   template <>                                                          \
   EXPORT void Neg<T, CPUContext>(                                  \
       const int N, const T* X, T* Y, CPUContext* /* context */) {      \
     EigenVectorArrayMap<T>(Y, N) = -ConstEigenVectorArrayMap<T>(X, N); \
   }
-PXML_SPECIALIZED_NEG(std::int32_t)
-PXML_SPECIALIZED_NEG(std::int64_t)
-PXML_SPECIALIZED_NEG(float)
-PXML_SPECIALIZED_NEG(double)
-#undef PXML_SPECIALIZED_NEG
+CAFFE2_SPECIALIZED_NEG(std::int32_t)
+CAFFE2_SPECIALIZED_NEG(std::int64_t)
+CAFFE2_SPECIALIZED_NEG(float)
+CAFFE2_SPECIALIZED_NEG(double)
+#undef CAFFE2_SPECIALIZED_NEG
 
-#define PXML_SPECIALIZED_SCALE(TAlpha, TData)                               \
+#define CAFFE2_SPECIALIZED_SCALE(TAlpha, TData)                               \
   template <>                                                                 \
   EXPORT void Scale<TAlpha, TData, CPUContext>(                           \
       const std::int64_t N,                                                   \
@@ -577,9 +577,9 @@ PXML_SPECIALIZED_NEG(double)
           ConstEigenVectorArrayMap<TData>(X, N) * static_cast<TData>(*alpha); \
     }                                                                         \
   }
-PXML_SPECIALIZED_SCALE(std::int32_t, std::int32_t)
-PXML_SPECIALIZED_SCALE(std::int64_t, std::int64_t)
-#undef PXML_SPECIALIZED_SCALE
+CAFFE2_SPECIALIZED_SCALE(std::int32_t, std::int32_t)
+CAFFE2_SPECIALIZED_SCALE(std::int64_t, std::int64_t)
+#undef CAFFE2_SPECIALIZED_SCALE
 
 #define DELEGATE_SIMPLE_BINARY_FUNCTION_BY_EIGEN_OPERATOR(T, Func, EigenOp)   \
   template <>                                                                 \
