@@ -7,7 +7,7 @@
 #include <thrust/functional.h>
 #include <thrust/transform.h>
 
-#include "caffe2/core/context_gpu.h"
+#include "caffe2/core/context_gpu.hh"
 #include "c10/cuda/CUDAMathCompat.h"
 // #include "caffe2/utils/conversions.h"
 // #include "caffe2/utils/math/half_utils.h"
