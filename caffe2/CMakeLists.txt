@@ -4,9 +4,6 @@ include(../cmake/Codegen.cmake)
 # 在根目录的CMakelists.txt中已经包含了该文件
 # include(../cmake/public/utils.cmake)
 
-add_subdirectory(core)
-add_subdirectory(utils)
-
 # This is required for older versions of CMake, which don't allow
 # specifying add_library() without a list of source files
 set(DUMMY_EMPTY_FILE ${CMAKE_BINARY_DIR}/empty.cpp)
@@ -26,9 +23,13 @@ endif()
 
 set(Caffe2_CPU_SRCS ${DUMMY_EMPTY_FILE})
 
+
+# 在如下目录中有Caffe2_CPU_SRCS的定义
+add_subdirectory(core)
+add_subdirectory(utils)
+
 add_library(torch_cpu ${Caffe2_CPU_SRCS})
 target_link_libraries(torch_cpu PUBLIC c10)
-
 
 # Compile exposed libraries.
 if(USE_CUDA)
