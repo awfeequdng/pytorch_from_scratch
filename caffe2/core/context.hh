@@ -5,7 +5,7 @@
 namespace caffe2
 {
 
-class PXTORCH_API CPUContext final : public BaseContext {
+class CPUContext final : public BaseContext {
 
 };
 

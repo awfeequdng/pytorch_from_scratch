@@ -4,7 +4,7 @@
 namespace caffe2
 {
 
-class PXTORCH_API BaseContext {
+class BaseContext {
 
 };
 

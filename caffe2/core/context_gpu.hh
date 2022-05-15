@@ -4,7 +4,7 @@
 
 namespace caffe2 {
 
-class PXML_CUDA_API CUDAContext final : public BaseContext {
+class CUDAContext final : public BaseContext {
 
 };
 
