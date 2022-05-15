@@ -139,3 +139,79 @@ macro(caffe2_interface_library SRC DST)
     INTERFACE_SYSTEM_INCLUDE_DIRECTORIES
     $<TARGET_PROPERTY:${SRC},INTERFACE_SYSTEM_INCLUDE_DIRECTORIES>)
 endmacro()
+
+##############################################################################
+# Add standard compile options.
+# Usage:
+#   torch_compile_options(lib_name)
+function(torch_compile_options libname)
+  set_property(TARGET ${libname} PROPERTY CXX_STANDARD 20)
+  set(private_compile_options "")
+
+  # ---[ Check if warnings should be errors.
+  if(WERROR)
+    list(APPEND private_compile_options -Werror)
+  endif()
+
+  # until they can be unified, keep these lists synced with setup.py
+  list(APPEND private_compile_options
+        -Wall
+        -Wextra
+        -Wno-unused-parameter
+        -Wno-unused-function
+        -Wno-unused-result
+        -Wno-unused-local-typedefs
+        -Wno-missing-field-initializers
+        -Wno-write-strings
+        -Wno-unknown-pragmas
+        -Wno-type-limits
+        -Wno-array-bounds
+        -Wno-unknown-pragmas
+        -Wno-sign-compare
+        -Wno-strict-overflow
+        -Wno-strict-aliasing
+        -Wno-error=deprecated-declarations
+        # Clang has an unfixed bug leading to spurious missing braces
+        # warnings, see https://bugs.llvm.org/show_bug.cgi?id=21629
+        -Wno-missing-braces
+        )
+  if("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
+    list(APPEND private_compile_options
+          -Wno-range-loop-analysis)
+  else()
+    list(APPEND private_compile_options
+          # Considered to be flaky.  See the discussion at
+          # https://github.com/pytorch/pytorch/pull/9608
+      -Wno-maybe-uninitialized)
+  endif()
+
+  target_compile_options(${libname} PRIVATE
+      $<$<COMPILE_LANGUAGE:CXX>:${private_compile_options}>)
+  if(USE_CUDA)
+    string(FIND "${private_compile_options}" " " space_position)
+    if(NOT space_position EQUAL -1)
+      message(FATAL_ERROR "Found spaces in private_compile_options='${private_compile_options}'")
+    endif()
+    # Convert CMake list to comma-separated list
+    string(REPLACE ";" "," private_compile_options "${private_compile_options}")
+    target_compile_options(${libname} PRIVATE
+        $<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler=${private_compile_options}>)
+  endif()
+
+  if(NOT USE_ASAN)
+    # Enable hidden visibility by default to make it easier to debug issues with
+    # TORCH_API annotations. Hidden visibility with selective default visibility
+    # behaves close enough to Windows' dllimport/dllexport.
+    #
+    # Unfortunately, hidden visibility messes up some ubsan warnings because
+    # templated classes crossing library boundary get duplicated (but identical)
+    # definitions. It's easier to just disable it.
+    target_compile_options(${libname} PRIVATE
+        $<$<COMPILE_LANGUAGE:CXX>: -fvisibility=hidden>)
+  endif()
+
+  # Use -O2 for release builds (-O3 doesn't improve perf, and -Os results in perf regression)
+  target_compile_options(${libname} PRIVATE
+      $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<OR:$<CONFIG:Release>,$<CONFIG:RelWithDebInfo>>>:-O2>)
+
+endfunction()
