@@ -9,9 +9,9 @@
 
 #include "caffe2/core/context_gpu.hh"
 #include "c10/cuda/CUDAMathCompat.h"
-// #include "caffe2/utils/conversions.h"
-// #include "caffe2/utils/math/half_utils.h"
-// #include "caffe2/utils/math/utils.h"
+#include "caffe2/utils/conversions.h"
+#include "caffe2/utils/math/half_utils.h"
+#include "caffe2/utils/math/utils.h"
 
 namespace caffe2 {
 namespace math {
@@ -222,7 +222,7 @@ CAFFE2_SPECIALIZED_HALF_SCALE_CUDA_KERNEL(float)
 
 #define CAFFE2_SPECIALIZED_CUDA_SET(T)                                    \
   template <>                                                             \
-  CAFFE2_CUDA_EXPORT void Set<T, CUDAContext>(                            \
+  void Set<T, CUDAContext>(                            \
       const std::int64_t N, const T alpha, T* Y, CUDAContext* context) {  \
     if (N == 0) {                                                         \
       return;                                                             \
@@ -250,7 +250,7 @@ CAFFE2_SPECIALIZED_CUDA_SET(at::BFloat16)
 
 #define DELEGATE_SIMPLE_CUDA_UNARY_FUNCTION(T, Func, DeviceFunc) \
   template <>                                                    \
-  CAFFE2_CUDA_EXPORT void Func<T, CUDAContext>(                  \
+   void Func<T, CUDAContext>(                  \
       const int N, const T* X, T* Y, CUDAContext* context) {     \
     if (N > 0) {                                                 \
       thrust::transform(                                         \
@@ -319,7 +319,7 @@ DELEGATE_SIMPLE_CUDA_UNARY_FUNCTION(double, Sign, utils::Sign<double>)
 
 #define DELEGATE_CUDA_POWX(T, DeviceFunc)                               \
   template <>                                                           \
-  CAFFE2_CUDA_EXPORT void Powx<T, CUDAContext>(                         \
+   void Powx<T, CUDAContext>(                         \
       const int N, const T* A, const T b, T* Y, CUDAContext* context) { \
     thrust::transform(                                                  \
         thrust::cuda::par.on(context->cuda_stream()),                   \
@@ -333,7 +333,7 @@ DELEGATE_CUDA_POWX(float, powf)
 
 #define CAFFE2_SPECIALIZED_CUDA_SINCOS(T)                             \
   template <>                                                         \
-  CAFFE2_CUDA_EXPORT void SinCos<T, CUDAContext>(                     \
+   void SinCos<T, CUDAContext>(                     \
       const int N, const T* X, T* S, T* C, CUDAContext* context) {    \
     if (N > 0) {                                                      \
       const int K = DivUp(N, CAFFE_CUDA_NUM_THREADS);                 \
@@ -349,7 +349,7 @@ CAFFE2_SPECIALIZED_CUDA_SINCOS(double)
 
 #define DELEGATE_CUDA_SCALE(T, CuBLASFunc)                                   \
   template <>                                                                \
-  CAFFE2_CUDA_EXPORT void Scale<T, T, CUDAContext>(                          \
+   void Scale<T, T, CUDAContext>(                          \
       const std::int64_t N,                                                  \
       const T alpha,                                                         \
       const T* X,                                                            \
@@ -371,7 +371,7 @@ CAFFE2_SPECIALIZED_CUDA_SINCOS(double)
     }                                                                        \
   }                                                                          \
   template <>                                                                \
-  CAFFE2_CUDA_EXPORT void Scale<T, T, CUDAContext>(                          \
+   void Scale<T, T, CUDAContext>(                          \
       const std::int64_t N,                                                  \
       const T* alpha,                                                        \
       const T* X,                                                            \
@@ -399,7 +399,7 @@ DELEGATE_CUDA_SCALE(double, cublasDscal)
 #define DELEGATE_CUDA_SCALE_EX(                                              \
     TAlpha, TData, kAlphaType, kDataType, kExecutionType)                    \
   template <>                                                                \
-  CAFFE2_CUDA_EXPORT void Scale<TAlpha, TData, CUDAContext>(                 \
+   void Scale<TAlpha, TData, CUDAContext>(                 \
       const std::int64_t N,                                                  \
       const TAlpha alpha,                                                    \
       const TData* X,                                                        \
@@ -429,7 +429,7 @@ DELEGATE_CUDA_SCALE(double, cublasDscal)
     }                                                                        \
   }                                                                          \
   template <>                                                                \
-  CAFFE2_CUDA_EXPORT void Scale<TAlpha, TData, CUDAContext>(                 \
+   void Scale<TAlpha, TData, CUDAContext>(                 \
       const std::int64_t N,                                                  \
       const TAlpha* alpha,                                                   \
       const TData* X,                                                        \
@@ -464,7 +464,7 @@ DELEGATE_CUDA_SCALE_EX(float, at::Half, CUDA_R_32F, CUDA_R_16F, CUDA_R_32F)
 
 #define CAFFE2_SPECIALIZED_CUDA_SCALE(TAlpha, TData)                         \
   template <>                                                                \
-  CAFFE2_CUDA_EXPORT void Scale<TAlpha, TData, CUDAContext>(                 \
+   void Scale<TAlpha, TData, CUDAContext>(                 \
       const std::int64_t N,                                                  \
       const TAlpha alpha,                                                    \
       const TData* X,                                                        \
@@ -479,7 +479,7 @@ DELEGATE_CUDA_SCALE_EX(float, at::Half, CUDA_R_32F, CUDA_R_16F, CUDA_R_32F)
     }                                                                        \
   }                                                                          \
   template <>                                                                \
-  CAFFE2_CUDA_EXPORT void Scale<TAlpha, TData, CUDAContext>(                 \
+   void Scale<TAlpha, TData, CUDAContext>(                 \
       const std::int64_t N,                                                  \
       const TAlpha* alpha,                                                   \
       const TData* X,                                                        \
@@ -499,7 +499,7 @@ CAFFE2_SPECIALIZED_CUDA_SCALE(std::int64_t, std::int64_t)
 
 #define DELEGATE_SIMPLE_CUDA_BINARY_FUNCTION(T, Func, DeviceFunc)        \
   template <>                                                            \
-  CAFFE2_CUDA_EXPORT void Func<T, CUDAContext>(                          \
+   void Func<T, CUDAContext>(                          \
       const int N, const T* A, const T* B, T* C, CUDAContext* context) { \
     if (N > 0) {                                                         \
       thrust::transform(                                                 \
@@ -593,7 +593,7 @@ DELEGATE_SIMPLE_CUDA_BINARY_FUNCTION(
 
 #define DELEGATE_SIMPLE_CUDA_COMPARE_FUNCTION(T, Func, DeviceComp)          \
   template <>                                                               \
-  CAFFE2_CUDA_EXPORT void Func<T, CUDAContext>(                             \
+   void Func<T, CUDAContext>(                             \
       const int N, const T* A, const T* B, bool* C, CUDAContext* context) { \
     if (N > 0) {                                                            \
       thrust::transform(                                                    \
@@ -681,7 +681,7 @@ DELEGATE_SIMPLE_CUDA_COMPARE_FUNCTION(
 
 #define DELEGATE_CUDA_AXPY(T, CuBLASFunc)                             \
   template <>                                                         \
-  CAFFE2_CUDA_EXPORT void Axpy<T, T, CUDAContext>(                    \
+   void Axpy<T, T, CUDAContext>(                    \
       const std::int64_t N,                                           \
       const T alpha,                                                  \
       const T* X,                                                     \
@@ -693,7 +693,7 @@ DELEGATE_SIMPLE_CUDA_COMPARE_FUNCTION(
         CuBLASFunc(context->cublas_handle(), N, &alpha, X, 1, Y, 1)); \
   }                                                                   \
   template <>                                                         \
-  CAFFE2_CUDA_EXPORT void Axpy<T, T, CUDAContext>(                    \
+   void Axpy<T, T, CUDAContext>(                    \
       const std::int64_t N,                                           \
       const T* alpha,                                                 \
       const T* X,                                                     \
@@ -710,7 +710,7 @@ DELEGATE_CUDA_AXPY(float, cublasSaxpy)
 #define DELEGATE_CUDA_AXPY_EX(                                  \
     TAlpha, TData, kAlphaType, kDataType, kExecutionType)       \
   template <>                                                   \
-  CAFFE2_CUDA_EXPORT void Axpy<TAlpha, TData, CUDAContext>(     \
+   void Axpy<TAlpha, TData, CUDAContext>(     \
       const std::int64_t N,                                     \
       const TAlpha alpha,                                       \
       const TData* X,                                           \
@@ -732,7 +732,7 @@ DELEGATE_CUDA_AXPY(float, cublasSaxpy)
         kExecutionType));                                       \
   }                                                             \
   template <>                                                   \
-  CAFFE2_CUDA_EXPORT void Axpy<TAlpha, TData, CUDAContext>(     \
+   void Axpy<TAlpha, TData, CUDAContext>(     \
       const std::int64_t N,                                     \
       const TAlpha* alpha,                                      \
       const TData* X,                                           \
@@ -759,7 +759,7 @@ DELEGATE_CUDA_AXPY_EX(float, at::Half, CUDA_R_32F, CUDA_R_16F, CUDA_R_32F)
 
 #define CAFFE2_SPECIALIZED_CUDA_AXPBY(TAlpha, TData)                       \
   template <>                                                              \
-  CAFFE2_CUDA_EXPORT void Axpby<TAlpha, TData, CUDAContext>(               \
+   void Axpby<TAlpha, TData, CUDAContext>(               \
       const std::int64_t N,                                                \
       const TAlpha alpha,                                                  \
       const TData* X,                                                      \
@@ -773,7 +773,7 @@ DELEGATE_CUDA_AXPY_EX(float, at::Half, CUDA_R_32F, CUDA_R_16F, CUDA_R_32F)
     C10_CUDA_KERNEL_LAUNCH_CHECK();                                        \
   }                                                                        \
   template <>                                                              \
-  CAFFE2_CUDA_EXPORT void Axpby<TAlpha, TData, CUDAContext>(               \
+   void Axpby<TAlpha, TData, CUDAContext>(               \
       const std::int64_t N,                                                \
       const TAlpha* alpha,                                                 \
       const TData* X,                                                      \
