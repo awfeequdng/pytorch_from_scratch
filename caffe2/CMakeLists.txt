@@ -14,16 +14,38 @@ file(WRITE ${DUMMY_EMPTY_FILE} ${DUMMY_FILE_CONTENT})
 # Wrapper library for people who link against torch and expect both CPU and CUDA support
 # Contains "torch_cpu" and "torch_cuda"
 add_library(torch ${DUMMY_EMPTY_FILE})
+
 if(HAVE_SOVERSION)
   set_target_properties(torch PROPERTIES
       VERSION ${TORCH_VERSION} SOVERSION ${TORCH_SOVERSION})
 endif()
 
 
+
 set(Caffe2_CPU_SRCS ${DUMMY_EMPTY_FILE})
 
 add_library(torch_cpu ${Caffe2_CPU_SRCS})
 target_link_libraries(torch_cpu PUBLIC c10)
+
+
+# Compile exposed libraries.
+if(USE_CUDA)
+  set(CUDA_LINK_LIBRARIES_KEYWORD PRIVATE)
+
+  add_library(torch_cuda
+      ${Caffe2_GPU_SRCS} ${Caffe2_GPU_SRCS_W_SORT_BY_KEY}
+      ${Caffe2_GPU_CU_SRCS} ${Caffe2_GPU_CU_SRCS_W_SORT_BY_KEY})
+
+  set(CUDA_LINK_LIBRARIES_KEYWORD)
+  torch_compile_options(torch_cuda)  # see cmake/public/utils.cmake
+  target_compile_definitions(torch_cuda PRIVATE USE_CUDA)
+
+  if(USE_NCCL)
+    target_link_libraries(torch_cuda PRIVATE __caffe2_nccl)
+    target_compile_definitions(torch_cuda PRIVATE USE_NCCL)
+  endif()
+
+endif()
 
 caffe2_interface_library(torch torch_library)
 

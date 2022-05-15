@@ -6,17 +6,17 @@ if(TARGET torch::cudart)
 endif()
 
 # Enable CUDA language support
-set(CUDAToolkit_ROOT "${CUDA_TOOLKIT_ROOT_DIR}")
+# set(CUDAToolkit_ROOT "${CUDA_TOOLKIT_ROOT_DIR}")
 enable_language(CUDA)
 set(CMAKE_CUDA_STANDARD ${CMAKE_CXX_STANDARD})
 set(CMAKE_CUDA_STANDARD_REQUIRED ON)
 
-message(STATUS "Caffe2: CUDA detected: " ${CUDA_VERSION})
-message(STATUS "Caffe2: CUDA nvcc is: " ${CUDA_NVCC_EXECUTABLE})
-message(STATUS "Caffe2: CUDA toolkit directory: " ${CUDA_TOOLKIT_ROOT_DIR})
-if(CUDA_VERSION VERSION_LESS 10.2)
-  message(FATAL_ERROR "PyTorch requires CUDA 10.2 or above.")
-endif()
+# message(STATUS "Caffe2: CUDA detected: " ${CUDA_VERSION})
+# message(STATUS "Caffe2: CUDA nvcc is: " ${CUDA_NVCC_EXECUTABLE})
+# message(STATUS "Caffe2: CUDA toolkit directory: " ${CUDA_TOOLKIT_ROOT_DIR})
+# if(CUDA_VERSION VERSION_LESS 10.2)
+  # message(FATAL_ERROR "PyTorch requires CUDA 10.2 or above.")
+# endif()
 
 # find libcuda.so and lbnvrtc.so
 # For libcuda.so, we will find it under lib, lib64, and then the
