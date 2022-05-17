@@ -57,9 +57,33 @@ caffe2_interface_library(torch torch_library)
 # torch_cpu_library 链接torch_cpu
 caffe2_interface_library(torch_cpu torch_cpu_library)
 
+if(USE_CUDA)
+  caffe2_interface_library(torch_cuda torch_cuda_library)
+endif()
 
 target_link_libraries(torch PUBLIC torch_cpu_library)
 
+if(USE_CUDA)
+  target_link_libraries(torch PUBLIC torch_cuda_library)
+endif()
+
+# ---[ CUDA library.
+if(USE_CUDA)
+  target_link_libraries(torch_cuda INTERFACE torch::cudart)
+  # target_link_libraries(torch_cuda PUBLIC c10_cuda torch::nvtoolsext)
+
+  target_include_directories(
+      torch_cuda INTERFACE $<INSTALL_INTERFACE:include>)
+  target_include_directories(
+      torch_cuda PRIVATE ${Caffe2_GPU_INCLUDE})
+  target_link_libraries(
+      torch_cuda PRIVATE ${Caffe2_CUDA_DEPENDENCY_LIBS})
+
+  # These public dependencies must go after the previous dependencies, as the
+  # order of the libraries in the linker call matters here when statically
+  # linking; libculibos and cublas must be last.
+  target_link_libraries(torch_cuda PUBLIC torch_cpu_library ${Caffe2_PUBLIC_CUDA_DEPENDENCY_LIBS})
+endif()
 
 add_subdirectory(../torch torch)
 
