@@ -215,3 +215,15 @@ function(torch_compile_options libname)
       $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<OR:$<CONFIG:Release>,$<CONFIG:RelWithDebInfo>>>:-O2>)
 
 endfunction()
+
+
+##############################################################################
+# Multiplex between adding libraries for CUDA
+# Usage:
+#   torch_cuda_based_add_library(cuda_target)
+#
+macro(torch_cuda_based_add_library cuda_target)
+  if(USE_CUDA)
+    add_library(${cuda_target} ${ARGN})
+  endif()
+endmacro()
