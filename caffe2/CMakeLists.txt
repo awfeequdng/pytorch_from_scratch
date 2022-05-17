@@ -4,6 +4,9 @@ include(../cmake/Codegen.cmake)
 # 在根目录的CMakelists.txt中已经包含了该文件
 # include(../cmake/public/utils.cmake)
 
+set(TORCH_SRC_DIR "${PROJECT_SOURCE_DIR}/torch")
+set(TORCH_ROOT "${PROJECT_SOURCE_DIR}")
+
 # This is required for older versions of CMake, which don't allow
 # specifying add_library() without a list of source files
 set(DUMMY_EMPTY_FILE ${CMAKE_BINARY_DIR}/empty.cpp)
@@ -53,6 +56,17 @@ endif()
 caffe2_interface_library(torch torch_library)
 
 # install(TARGETS torch torch_library EXPORT Caffe2Targets DESTINATION "${TORCH_INSTALL_LIB_DIR}")
+
+set(TH_CPU_INCLUDE
+    # dense
+    aten/src/TH
+    ${CMAKE_CURRENT_BINARY_DIR}/aten/src/TH
+    ${TORCH_ROOT}/aten/src
+    ${CMAKE_CURRENT_BINARY_DIR}/aten/src
+
+    ${CMAKE_BINARY_DIR}/aten/src)
+
+target_include_directories(torch_cpu PRIVATE ${TH_CPU_INCLUDE})
 
 # torch_cpu_library 链接torch_cpu
 caffe2_interface_library(torch_cpu torch_cpu_library)
