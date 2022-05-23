@@ -10,7 +10,6 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
-#include <string_view>
 #ifdef __GXX_RTTI
 #include <typeinfo>
 #endif
@@ -22,6 +21,7 @@
 #include <c10/util/Exception.h>
 #include <c10/util/IdWrapper.h>
 #include <c10/util/Type.h>
+#include <c10/util/string_view.h>
 #include <c10/util/TypeIndex.h>
 #include <c10/util/TypeTraits.h>
 #include <c10/core/ScalarType.h>
@@ -137,7 +137,7 @@ struct TypeMetaData final {
       PlacementDelete* placementDelete,
       Delete* deleteFn,
       TypeIdentifier id,
-      std::string_view name) noexcept
+      c10::string_view name) noexcept
       : itemsize_(itemsize),
         new_(newFn),
         placementNew_(placementNew),
@@ -154,7 +154,7 @@ struct TypeMetaData final {
   PlacementDelete* placementDelete_;
   Delete* delete_;
   TypeIdentifier id_;
-  std::string_view name_;
+  c10::string_view name_;
 };
 
 // Mechanism for throwing errors which can't be prevented at compile time
@@ -413,7 +413,7 @@ class TypeMeta final {
   /**
    * Returns a printable name for the type.
    */
-  std::string_view name() const noexcept {
+  c10::string_view name() const noexcept {
     return data().name_;
   }
 
@@ -432,7 +432,7 @@ class TypeMeta final {
   }
 
   template <class T>
-  static std::string_view TypeName() noexcept {
+  static c10::string_view TypeName() noexcept {
     return c10::util::get_fully_qualified_type_name<T>();
   }
 

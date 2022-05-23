@@ -4,7 +4,8 @@
 #include <c10/util/IdWrapper.h>
 #include <cinttypes>
 #include <functional>
-#include <string_view>
+// #include <string_view>
+#include <c10/util/string_view.h>
 #include <iostream>
 #include <stdexcept>
 
@@ -69,13 +70,13 @@ namespace detail {
 #error "You're running a too old version of Clang. We need Clang 4 or later."
 #endif
 
-inline constexpr std::string_view extract(
-    std::string_view prefix,
-    std::string_view suffix,
-    std::string_view str) {
+inline constexpr c10::string_view extract(
+    c10::string_view prefix,
+    c10::string_view suffix,
+    c10::string_view str) {
 #if !defined(__CUDA_ARCH__) // CUDA doesn't like std::logic_error in device code
   return (!str.starts_with(prefix) || !str.ends_with(suffix))
-      ? (throw std::logic_error("Invalid pattern"), std::string_view())
+      ? (throw std::logic_error("Invalid pattern"), c10::string_view())
       : str.substr(prefix.size(), str.size() - prefix.size() - suffix.size());
 #else
   return str.substr(prefix.size(), str.size() - prefix.size() - suffix.size());
@@ -83,20 +84,20 @@ inline constexpr std::string_view extract(
 }
 
 template <typename T>
-inline C10_TYPENAME_CONSTEXPR std::string_view fully_qualified_type_name_impl() {
+inline C10_TYPENAME_CONSTEXPR c10::string_view fully_qualified_type_name_impl() {
 #if defined(__clang__)
   return extract(
-      "std::string_view c10::util::detail::fully_qualified_type_name_impl() [T = ",
+      "c10::string_view c10::util::detail::fully_qualified_type_name_impl() [T = ",
       "]",
       __PRETTY_FUNCTION__);
 #elif defined(__GNUC__)
   return extract(
 #if C10_TYPENAME_SUPPORTS_CONSTEXPR
-      "constexpr std::string_view c10::util::detail::fully_qualified_type_name_impl() [with T = ",
+      "constexpr c10::string_view c10::util::detail::fully_qualified_type_name_impl() [with T = ",
 #else
-      "std::string_view c10::util::detail::fully_qualified_type_name_impl() [with T = ",
+      "c10::string_view c10::util::detail::fully_qualified_type_name_impl() [with T = ",
 #endif
-      "; std::string_view = std::basic_string_view<char>]",
+      "; c10::string_view = c10::basic_string_view<char>]",
       __PRETTY_FUNCTION__);
 #endif
 }
@@ -149,14 +150,14 @@ inline constexpr type_index get_type_index<std::string>() {
 #endif
 
 template <typename T>
-inline C10_TYPENAME_CONSTEXPR std::string_view
+inline C10_TYPENAME_CONSTEXPR c10::string_view
 get_fully_qualified_type_name() noexcept {
 #if C10_TYPENAME_SUPPORTS_CONSTEXPR
   constexpr
 #else
   static
 #endif
-     std::string_view name = detail::fully_qualified_type_name_impl<T>();
+     c10::string_view name = detail::fully_qualified_type_name_impl<T>();
   return name;
 }
 } // namespace util
