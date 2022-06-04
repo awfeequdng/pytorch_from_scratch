@@ -119,7 +119,7 @@ class InlineDeviceGuard {
   void set_device(at::Device device) {
     AT_ASSERT(
         (U::static_type == DeviceType::HIP && device.is_cuda()) ||
-        device.type() == U::static_type, "");
+        device.type() == U::static_type);
     auto index = device.index();
     if (index == -1)
       return;
@@ -162,7 +162,7 @@ class InlineDeviceGuard {
     if (index == -1)
       return;
     if (device.type() == original_device_.type()) {
-      TORCH_CHECK(impl == nullptr || impl->type() == device.type(), "");
+      AT_ASSERT(impl == nullptr || impl->type() == device.type());
       impl_.setDevice(device);
       current_device_ = device;
     } else {

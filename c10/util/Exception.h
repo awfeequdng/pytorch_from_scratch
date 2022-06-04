@@ -373,3 +373,19 @@ namespace detail {
   C10_EXPAND_MSVC_WORKAROUND(TORCH_INTERNAL_ASSERT(__VA_ARGS__))
 #endif
 
+// Deprecated alias; this alias was deprecated because people kept mistakenly
+// using it for user error checking.  Use TORCH_INTERNAL_ASSERT or TORCH_CHECK
+// instead. See https://github.com/pytorch/pytorch/issues/20287 for more
+// details.
+#define AT_ASSERT(...)                                              \
+  do {                                                              \
+    C10_EXPAND_MSVC_WORKAROUND(TORCH_INTERNAL_ASSERT(__VA_ARGS__)); \
+  } while (false)
+
+// Like TORCH_CHECK, but raises IndexErrors instead of Errors.
+#define TORCH_CHECK_INDEX(cond, ...) \
+  TORCH_CHECK_WITH_MSG(IndexError, cond, "INDEX", __VA_ARGS__)
+
+// Like TORCH_CHECK, but raises ValueErrors instead of Errors.
+#define TORCH_CHECK_VALUE(cond, ...) \
+  TORCH_CHECK_WITH_MSG(ValueError, cond, "VALUE", __VA_ARGS__)
