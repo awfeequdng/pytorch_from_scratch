@@ -48,3 +48,5 @@
     CHECK(status == CUBLAS_STATUS_SUCCESS)         \
         << ::caffe2::cublasGetErrorString(status); \
   } while (0)
+
+using CUDAGuard = c10::cuda::CUDAGuard;
