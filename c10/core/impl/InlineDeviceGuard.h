@@ -405,7 +405,7 @@ class InlineOptionalDeviceGuard {
   /// Returns the device that was set immediately prior to initialization of
   /// the, guard, or nullopt if the guard is uninitialized.
   std::optional<Device> original_device() const {
-    return guard_.has_value() ? make_optional(guard_->original_device())
+    return guard_.has_value() ? std::make_optional(guard_->original_device())
                               : nullopt;
   }
 
@@ -413,7 +413,7 @@ class InlineOptionalDeviceGuard {
   /// either from construction, or via set_device, if the guard is initialized,
   /// or nullopt if the guard is uninitialized.
   std::optional<Device> current_device() const {
-    return guard_.has_value() ? make_optional(guard_->current_device())
+    return guard_.has_value() ? std::make_optional(guard_->current_device())
                               : nullopt;
   }
 
