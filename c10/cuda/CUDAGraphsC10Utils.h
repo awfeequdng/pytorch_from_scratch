@@ -18,7 +18,7 @@ using MempoolId_t = std::pair<CaptureId_t, CaptureId_t>;
 // RAII guard for "cudaStreamCaptureMode", a thread-local value
 // that controls the error-checking strictness of a capture.
 #if defined(CUDA_VERSION) && CUDA_VERSION >= 11000
-struct C10_CUDA_API CUDAStreamCaptureModeGuard {
+struct CUDAStreamCaptureModeGuard {
   CUDAStreamCaptureModeGuard(cudaStreamCaptureMode desired) {
     strictness_ = desired;
     C10_CUDA_CHECK(cudaThreadExchangeStreamCaptureMode(&strictness_));

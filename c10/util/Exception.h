@@ -389,3 +389,17 @@ namespace detail {
 // Like TORCH_CHECK, but raises ValueErrors instead of Errors.
 #define TORCH_CHECK_VALUE(cond, ...) \
   TORCH_CHECK_WITH_MSG(ValueError, cond, "VALUE", __VA_ARGS__)
+
+#ifdef STRIP_ERROR_MESSAGES
+#define TORCH_WARN(...)                                      \
+  ::c10::Warning::warn(                                      \
+      {__func__, __FILE__, static_cast<uint32_t>(__LINE__)}, \
+      ::c10::detail::CompileTimeEmptyString{},               \
+      false)
+#else
+#define TORCH_WARN(...)                                      \
+  ::c10::Warning::warn(                                      \
+      {__func__, __FILE__, static_cast<uint32_t>(__LINE__)}, \
+      ::c10::str(__VA_ARGS__),                               \
+      false)
+#endif
