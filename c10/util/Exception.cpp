@@ -1,5 +1,6 @@
 #include <c10/util/Exception.h>
 #include <c10/util/Type.h>
+#include <c10/util/Logging.h>
 
 namespace c10
 {
@@ -119,5 +120,94 @@ void torchInternalAssertFail(
 }
 
 } // namespace detail
+
+namespace Warning {
+
+namespace {
+WarningHandler* getBaseHandler() {
+  static WarningHandler base_warning_handler_ = WarningHandler();
+  return &base_warning_handler_;
+};
+
+class ThreadWarningHandler {
+ public:
+  ThreadWarningHandler() = delete;
+
+  static WarningHandler* get_handler() {
+    if (!warning_handler_) {
+      warning_handler_ = getBaseHandler();
+    }
+    return warning_handler_;
+  }
+
+  static void set_handler(WarningHandler* handler) {
+    warning_handler_ = handler;
+  }
+
+ private:
+  static thread_local WarningHandler* warning_handler_;
+};
+
+thread_local WarningHandler* ThreadWarningHandler::warning_handler_ = nullptr;
+
+} // namespace
+
+void warn(
+    const SourceLocation& source_location,
+    const std::string& msg,
+    const bool verbatim) {
+  ThreadWarningHandler::get_handler()->process(source_location, msg, verbatim);
+}
+
+void warn(
+    SourceLocation source_location,
+    detail::CompileTimeEmptyString msg,
+    const bool verbatim) {
+  warn(source_location, "", verbatim);
+}
+
+void warn(
+    SourceLocation source_location,
+    const char* msg,
+    const bool verbatim) {
+  ThreadWarningHandler::get_handler()->process(source_location, msg, verbatim);
+}
+
+void set_warning_handler(WarningHandler* handler) noexcept(true) {
+  ThreadWarningHandler::set_handler(handler);
+}
+
+WarningHandler* get_warning_handler() noexcept(true) {
+  return ThreadWarningHandler::get_handler();
+}
+
+bool warn_always = false;
+
+void set_warnAlways(bool setting) noexcept(true) {
+  warn_always = setting;
+}
+
+bool get_warnAlways() noexcept(true) {
+  return warn_always;
+}
+
+WarnAlways::WarnAlways(bool setting /*=true*/)
+    : prev_setting(get_warnAlways()) {
+  set_warnAlways(setting);
+}
+
+WarnAlways::~WarnAlways() {
+  set_warnAlways(prev_setting);
+}
+
+} // namespace Warning
+
+void WarningHandler::process(
+    const SourceLocation& source_location,
+    const std::string& msg,
+    const bool /*verbatim*/) {
+  LOG_AT_FILE_LINE(WARNING, source_location.file, source_location.line)
+      << "Warning: " << msg << " (function " << source_location.function << ")";
+}
 
 } // namespace c10

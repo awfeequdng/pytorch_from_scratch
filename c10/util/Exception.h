@@ -84,6 +84,86 @@ public:
     std::string compute_what(bool include_backtrace) const;
 };
 
+class WarningHandler {
+ public:
+  virtual ~WarningHandler() = default;
+  /// The default warning handler. Prints the message to stderr.
+  virtual void process(
+      const SourceLocation& source_location,
+      const std::string& msg,
+      const bool verbatim);
+};
+
+namespace Warning {
+
+// Note: [Verbatim Warnings]
+// Warnings originating in C++ code can appear out-of-place to Python users:
+// a user runs a line in Python, but the warning references a line in C++.
+// Some parts of PyTorch, like the JIT, are cognizant of this mismatch
+// and take care to map warnings back to the user's program, but most
+// of PyTorch simply throws a context-free warning. To allow warning
+// handlers to add context where appropriate, warn takes the
+// "verbatim" flag. When this is false a warning handler might append
+// the C++ warning to a Python warning message that relates the warning
+// back to the user's program. Callers who have already accounted for
+// context in their warnings should set verbatim to true so their warnings
+// appear without modification.
+
+/// Issue a warning with a given message. Dispatched to the current
+/// warning handler.
+void warn(
+    const SourceLocation& source_location,
+    const std::string& msg,
+    bool verbatim);
+void warn(
+    SourceLocation source_location,
+    const char* msg,
+    bool verbatim);
+void warn(
+    SourceLocation source_location,
+    ::c10::detail::CompileTimeEmptyString msg,
+    bool verbatim);
+/// Sets the global warning handler. This is not thread-safe, so it should
+/// generally be called once during initialization or while holding the GIL
+/// for programs that use python.
+/// User is responsible for keeping the WarningHandler alive until
+/// it is not needed.
+void set_warning_handler(WarningHandler* handler) noexcept(true);
+/// Gets the global warning handler.
+WarningHandler* get_warning_handler() noexcept(true);
+
+class WarningHandlerGuard {
+  WarningHandler* prev_handler_;
+
+ public:
+  WarningHandlerGuard(WarningHandler* new_handler)
+      : prev_handler_(c10::Warning::get_warning_handler()) {
+    c10::Warning::set_warning_handler(new_handler);
+  }
+  ~WarningHandlerGuard() {
+    c10::Warning::set_warning_handler(prev_handler_);
+  }
+};
+
+/// The TORCH_WARN_ONCE macro is difficult to test for. Use
+/// setWarnAlways(true) to turn it into TORCH_WARN, which can be
+/// tested for more easily.
+void set_warnAlways(bool) noexcept(true);
+bool get_warnAlways(void) noexcept(true);
+
+// A RAII guard that sets warn_always (not thread-local) on
+// construction, and sets it back to the original value upon destruction.
+struct WarnAlways {
+ public:
+  explicit WarnAlways(bool setting = true);
+  ~WarnAlways();
+
+ private:
+  bool prev_setting;
+};
+
+} // namespace Warning
+
 // Used in ATen for out-of-bound indices that can reasonably only be detected
 // lazily inside a kernel (See: advanced indexing).  These turn into
 // IndexError when they cross to Python.

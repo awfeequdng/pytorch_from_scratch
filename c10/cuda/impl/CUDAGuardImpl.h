@@ -39,12 +39,12 @@ struct CUDAGuardImpl final : public c10::impl::DeviceGuardImplInterface {
     C10_CUDA_CHECK(cudaGetDevice(&device));
     return Device(DeviceType::CUDA, device);
   }
-  c10::optional<Device> uncheckedGetDevice() const noexcept {
+  std::optional<Device> uncheckedGetDevice() const noexcept {
     int device;
     const auto err = C10_CUDA_ERROR_HANDLED(cudaGetDevice(&device));
     C10_CUDA_CHECK_WARN(err);
     if (err != cudaSuccess) {
-      return c10::nullopt;
+      return std::nullopt;
     }
     return Device(DeviceType::CUDA, device);
   }
