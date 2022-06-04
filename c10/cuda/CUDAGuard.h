@@ -242,7 +242,7 @@ struct OptionalCUDAStreamGuard {
 
   /// Returns the CUDA stream that was set at the time the guard was most
   /// recently initialized, or nullopt if the guard is uninitialized.
-  optional<CUDAStream> original_stream() const {
+  std::optional<CUDAStream> original_stream() const {
     auto r = guard_.original_stream();
     if (r.has_value()) {
       return make_optional(CUDAStream(CUDAStream::UNCHECKED, r.value()));
@@ -254,7 +254,7 @@ struct OptionalCUDAStreamGuard {
   /// Returns the most recent CUDA stream that was set using this stream guard,
   /// either from construction, or via reset_stream, if the guard is
   /// initialized, or nullopt if the guard is uninitialized.
-  optional<CUDAStream> current_stream() const {
+  std::optional<CUDAStream> current_stream() const {
     auto r = guard_.current_stream();
     if (r.has_value()) {
       return make_optional(CUDAStream(CUDAStream::UNCHECKED, r.value()));
