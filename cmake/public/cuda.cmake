@@ -86,6 +86,33 @@ set_property(
     TARGET torch::cudart PROPERTY INTERFACE_INCLUDE_DIRECTORIES
     ${CUDA_INCLUDE_DIRS})
 
+
+# cublas. CUDA_CUBLAS_LIBRARIES is actually a list, so we will make an
+# interface library similar to cudart.
+add_library(caffe2::cublas INTERFACE IMPORTED)
+target_link_libraries(caffe2::cublas ${CUDA_cublas_LIBRARY})
+# if(CAFFE2_STATIC_LINK_CUDA)
+#     set_property(
+#         TARGET caffe2::cublas PROPERTY INTERFACE_LINK_LIBRARIES
+#         "${CUDA_TOOLKIT_ROOT_DIR}/lib64/libcublas_static.a")
+#     set_property(
+#       TARGET caffe2::cublas APPEND PROPERTY INTERFACE_LINK_LIBRARIES
+#       "${CUDA_TOOLKIT_ROOT_DIR}/lib64/libcublasLt_static.a")
+#     # Add explicit dependency to cudart_static to fix
+#     # libcublasLt_static.a.o): undefined reference to symbol 'cudaStreamWaitEvent'
+#     # error adding symbols: DSO missing from command line
+#     set_property(
+#       TARGET caffe2::cublas APPEND PROPERTY INTERFACE_LINK_LIBRARIES
+#       "${CUDA_cudart_static_LIBRARY}" rt dl)
+# else()
+#     set_property(
+#         TARGET caffe2::cublas PROPERTY INTERFACE_LINK_LIBRARIES
+#         ${CUDA_CUBLAS_LIBRARIES})
+# endif()
+set_property(
+    TARGET caffe2::cublas PROPERTY INTERFACE_INCLUDE_DIRECTORIES
+    ${CUDA_INCLUDE_DIRS})
+
 list(APPEND CUDA_NVCC_FLAGS ${NVCC_FLAGS_EXTRA})
 message(STATUS "Added CUDA NVCC flags for: ${NVCC_FLAGS_EXTRA}")
 
