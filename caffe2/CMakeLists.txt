@@ -63,7 +63,11 @@ set(TH_CPU_INCLUDE
     ${CMAKE_CURRENT_BINARY_DIR}/aten/src/TH
     ${TORCH_ROOT}/aten/src
     ${CMAKE_CURRENT_BINARY_DIR}/aten/src
+    ${CMAKE_BINARY_DIR}/aten/src)
 
+set(ATen_CPU_INCLUDE
+    ${TORCH_ROOT}/aten/src
+    ${CMAKE_CURRENT_BINARY_DIR}/../aten/src
     ${CMAKE_BINARY_DIR}/aten/src)
 
 target_include_directories(torch_cpu PRIVATE ${TH_CPU_INCLUDE})
@@ -85,7 +89,7 @@ endif()
 if(USE_CUDA)
   target_link_libraries(torch_cuda INTERFACE torch::cudart)
   # target_link_libraries(torch_cuda PUBLIC c10_cuda torch::nvtoolsext)
-
+  target_include_directories(torch_cuda PRIVATE ${TH_CPU_INCLUDE})
   target_include_directories(
       torch_cuda INTERFACE $<INSTALL_INTERFACE:include>)
   target_include_directories(
