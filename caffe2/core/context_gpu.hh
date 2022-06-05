@@ -136,8 +136,8 @@ class CUDAContext final : public BaseContext {
   // The default cuda context constructor.
   explicit CUDAContext(DeviceIndex gpu_id = -1);
   // explicit CUDAContext(const DeviceOption& option);
-  explicit CUDAContext(Device device)
-      : CUDAContext(DeviceToOption(device)) {}
+  // explicit CUDAContext(Device device)
+  //     : CUDAContext(DeviceToOption(device)) {}
 
   ~CUDAContext() override;
 
@@ -149,14 +149,14 @@ class CUDAContext final : public BaseContext {
   // void SwitchToDevice()
   using BaseContext::SwitchToDevice;
 
-  inline void WaitEvent(const Event& ev) override {
-    ev.Wait(CUDA, this);
-  }
+  // inline void WaitEvent(const Event& ev) override {
+  //   ev.Wait(CUDA, this);
+  // }
 
-  inline void Record(Event* ev, const char* err_msg = nullptr) const override {
-    CAFFE_ENFORCE(ev, "Event must not be null.");
-    ev->Record(CUDA, this, err_msg);
-  }
+  // inline void Record(Event* ev, const char* err_msg = nullptr) const override {
+  //   CAFFE_ENFORCE(ev, "Event must not be null.");
+  //   ev->Record(CUDA, this, err_msg);
+  // }
 
   // Note on current use cases:
   // FinishDeviceComputation must be called on the same cpu thread as
@@ -298,14 +298,5 @@ class CUDAContext final : public BaseContext {
   curandGenerator_t curand_generator_{nullptr};
   static ThreadLocalCUDAObjects& getCudaObjects();
 };
-
-// The number of cuda threads to use. Since work is assigned to SMs at the
-// granularity of a block, 128 is chosen to allow utilizing more SMs for
-// smaller input sizes.
-// 1D grid
-constexpr int CAFFE_CUDA_NUM_THREADS = 128;
-// 2D grid
-constexpr int CAFFE_CUDA_NUM_THREADS_2D_DIMX = 16;
-constexpr int CAFFE_CUDA_NUM_THREADS_2D_DIMY = 16;
 
 } // namespace caffe2
