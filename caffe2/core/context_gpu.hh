@@ -2,7 +2,7 @@
 
 #include <c10/cuda/CUDAMacros.h>
 #include "caffe2/core/context_base.hh"
-
+#include "caffe2/core/context.h"
 #include <c10/core/Device.h>
 #include <c10/core/Stream.h>
 #include <c10/cuda/CUDAStream.h>
@@ -11,6 +11,19 @@
 #include <caffe2/core/common_gpu.h>
 
 namespace caffe2 {
+
+// 临时将这些变量放在这，
+using DeviceType = at::DeviceType;
+constexpr DeviceType CPU = DeviceType::CPU;
+constexpr DeviceType CUDA = DeviceType::CUDA;
+constexpr DeviceType OPENGL = DeviceType::OPENGL;
+constexpr DeviceType OPENCL = DeviceType::OPENCL;
+constexpr DeviceType MKLDNN = DeviceType::MKLDNN;
+constexpr DeviceType IDEEP = DeviceType::IDEEP;
+constexpr DeviceType HIP = DeviceType::HIP;
+constexpr DeviceType COMPILE_TIME_MAX_DEVICE_TYPES =
+    DeviceType::COMPILE_TIME_MAX_DEVICE_TYPES;
+
 enum class CudaMemoryPoolType {
   NONE = 0,
   CUB = 1,
@@ -122,7 +135,7 @@ class CUDAContext final : public BaseContext {
  public:
   // The default cuda context constructor.
   explicit CUDAContext(DeviceIndex gpu_id = -1);
-  explicit CUDAContext(const DeviceOption& option);
+  // explicit CUDAContext(const DeviceOption& option);
   explicit CUDAContext(Device device)
       : CUDAContext(DeviceToOption(device)) {}
 
@@ -257,15 +270,15 @@ class CUDAContext final : public BaseContext {
     return true;
   }
 
-  static bool IsStreamFree(const DeviceOption& option, StreamId stream_id) {
-    auto stream = CUDAContext::cuda_stream(option.device_id(), stream_id);
-    auto status = cudaStreamQuery(stream);
-    if (status == cudaErrorNotReady) {
-      // ignore and clear the error if not ready
-      (void)cudaGetLastError();
-    }
-    return status == cudaSuccess;
-  }
+  // static bool IsStreamFree(const DeviceOption& option, StreamId stream_id) {
+  //   auto stream = CUDAContext::cuda_stream(option.device_id(), stream_id);
+  //   auto status = cudaStreamQuery(stream);
+  //   if (status == cudaErrorNotReady) {
+  //     // ignore and clear the error if not ready
+  //     (void)cudaGetLastError();
+  //   }
+  //   return status == cudaSuccess;
+  // }
 
   at::Device device() const override {
     return at::Device(CUDA, gpu_id_);
