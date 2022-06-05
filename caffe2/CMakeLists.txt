@@ -50,7 +50,6 @@ if(USE_CUDA)
   #   target_link_libraries(torch_cuda PRIVATE __caffe2_nccl)
   #   target_compile_definitions(torch_cuda PRIVATE USE_NCCL)
   # endif()
-
 endif()
 
 caffe2_interface_library(torch torch_library)
