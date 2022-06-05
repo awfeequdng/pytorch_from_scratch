@@ -2,7 +2,7 @@
 
 #include <c10/cuda/CUDAMacros.h>
 #include "caffe2/core/context_base.hh"
-#include "caffe2/core/context.h"
+#include "caffe2/core/context.hh"
 #include <c10/core/Device.h>
 #include <c10/core/Stream.h>
 #include <c10/cuda/CUDAStream.h>
