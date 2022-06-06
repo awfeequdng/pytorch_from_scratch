@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+import "caffe2/proto/caffe2.proto";
+
+package torch;
+
+message RecordRef {
+  optional string key = 1;
+}

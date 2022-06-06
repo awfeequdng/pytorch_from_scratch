@@ -135,9 +135,9 @@ class CUDAContext final : public BaseContext {
  public:
   // The default cuda context constructor.
   explicit CUDAContext(DeviceIndex gpu_id = -1);
-  // explicit CUDAContext(const DeviceOption& option);
-  // explicit CUDAContext(Device device)
-  //     : CUDAContext(DeviceToOption(device)) {}
+  explicit CUDAContext(const DeviceOption& option);
+  explicit CUDAContext(Device device)
+      : CUDAContext(DeviceToOption(device)) {}
 
   ~CUDAContext() override;
 

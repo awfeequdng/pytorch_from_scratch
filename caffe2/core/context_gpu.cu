@@ -419,16 +419,16 @@ CUDAContext::CUDAContext(DeviceIndex gpu_id)
   static Caffe2CudaInitializerHelper g_cuda_initializer_;
 }
 
-// CUDAContext::CUDAContext(const DeviceOption& option)
-//     : gpu_id_(
-//           option.has_device_id() ? RectifyGPUID(option.device_id())
-//                                    : CaffeCudaGetDevice()),
-//       random_seed_(
-//           option.has_random_seed() ? option.random_seed()
-//                                    : RandomNumberSeed()) {
-//   static Caffe2CudaInitializerHelper g_cuda_initializer_;
-//   DCHECK_EQ(option.device_type(), PROTO_CUDA);
-// }
+CUDAContext::CUDAContext(const DeviceOption& option)
+    : gpu_id_(
+          option.has_device_id() ? RectifyGPUID(option.device_id())
+                                   : CaffeCudaGetDevice()),
+      random_seed_(
+          option.has_random_seed() ? option.random_seed()
+                                   : RandomNumberSeed()) {
+  static Caffe2CudaInitializerHelper g_cuda_initializer_;
+  DCHECK_EQ(option.device_type(), PROTO_CUDA);
+}
 
 CUDAContext::~CUDAContext() {
   try {

@@ -54,8 +54,8 @@ namespace at {
 
 REGISTER_CONTEXT(DeviceType::CPU, caffe2::CPUContext);
 
-// REGISTER_COPY_BYTES_FUNCTION(
-//     DeviceType::CPU,
-//     DeviceType::CPU,
-//     caffe2::CopyBytesWrapper);
+REGISTER_COPY_BYTES_FUNCTION(
+    DeviceType::CPU,
+    DeviceType::CPU,
+    caffe2::CopyBytesWrapper);
 } // namespace at

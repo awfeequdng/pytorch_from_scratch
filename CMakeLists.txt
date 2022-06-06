@@ -24,6 +24,15 @@ set(CMAKE_C_STANDARD 11)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+# One variable that determines whether the current cmake process is being run
+# with the main Caffe2 library. This is useful for building modules - if
+# modules are built with the main Caffe2 library then one does not need to do
+# find caffe2 in the cmake script. One can usually guard it in some way like
+#    if(NOT CAFFE2_CMAKE_BUILDING_WITH_MAIN_REPO)
+#      find_package(Caffe2 REQUIRED)
+#    endif()
+set(CAFFE2_CMAKE_BUILDING_WITH_MAIN_REPO ON)
+
 set(CPU_INTEL OFF)
 
 if(CMAKE_SYSTEM_PROCESSOR MATCHES "(AMD64|x86_64)")

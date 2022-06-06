@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package caffe2;
+
+// Device-specific options. We do not distinguish DeviceOption protos for
+// different DeviceTypes, so currently all devices share the same DeviceOption
+// proto. Fields that are specific to a device type is ignored if the type does
+// not match.
+// Note: if you add fields to the DeviceOption, make sure you add the
+// corresponding changes to IsSameDevice() function in utils/proto_utils.{h,cc}.
+message DeviceOption {
+  // [general] Options that need to be carried out before running the execution.
+  // optional DeviceType device_type = 1 [ default = CPU ];
+  optional int32 device_type = 1 [ default = 0 ]; // 0 is CPU.
+  // [general] Used together with device_type to identify the exact device
+  optional int32 device_id = 2;
+  // [general] The random seed to start the device random number generator with.
+  optional uint32 random_seed = 3;
+  // [general] What node this op should execute on.
+  // Used for net transformation purposes. Must be empty at execution time.
+  optional string node_name = 4;
+  // [CPU and Linux specific] NUMA node id
+  optional int32 numa_node_id = 5;
+  // [general] Extra information passed, not used at execution time currently.
+  repeated string extra_info = 6;
+}
+

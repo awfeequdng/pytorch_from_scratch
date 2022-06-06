@@ -85,13 +85,13 @@ class CPUContext final : public BaseContext {
   typedef std::mt19937 rand_gen_type;
 
   CPUContext() {}
-  // explicit CPUContext(const DeviceOption& option)
-  //     : random_seed_(option.has_random_seed() ? option.random_seed() : 1701),
-  //       random_seed_set_(option.has_random_seed() ? true : false) {
-  //   CAFFE_ENFORCE_EQ(option.device_type(), PROTO_CPU);
-  // }
-  // explicit CPUContext(const at::Device& device)
-  //     : CPUContext(DeviceToOption(device)) {}
+  explicit CPUContext(const DeviceOption& option)
+      : random_seed_(option.has_random_seed() ? option.random_seed() : 1701),
+        random_seed_set_(option.has_random_seed() ? true : false) {
+    CAFFE_ENFORCE_EQ(option.device_type(), PROTO_CPU);
+  }
+  explicit CPUContext(const at::Device& device)
+      : CPUContext(DeviceToOption(device)) {}
 
   ~CPUContext() noexcept override {}
 
