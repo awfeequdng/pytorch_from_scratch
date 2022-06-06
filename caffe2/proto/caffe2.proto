@@ -11,7 +11,7 @@ package caffe2;
 message DeviceOption {
   // [general] Options that need to be carried out before running the execution.
   // optional DeviceType device_type = 1 [ default = CPU ];
-  optional int32 device_type = 1 [ default = 0 ]; // 0 is CPU.
+  optional int32 device_type = 1; // 0 is CPU.
   // [general] Used together with device_type to identify the exact device
   optional int32 device_id = 2;
   // [general] The random seed to start the device random number generator with.
