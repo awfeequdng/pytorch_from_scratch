@@ -7,7 +7,7 @@
 #include <c10/core/Stream.h>
 #include <c10/cuda/CUDAStream.h>
 #include <c10/cuda/CUDAGuard.h>
-
+#include "caffe2/proto/caffe2_pb.h"
 #include <caffe2/core/common_gpu.h>
 
 namespace caffe2 {
