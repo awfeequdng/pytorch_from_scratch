@@ -31,6 +31,10 @@ set(Caffe2_CPU_SRCS ${DUMMY_EMPTY_FILE})
 add_subdirectory(core)
 add_subdirectory(utils)
 
+if(BUILD_CAFFE2)
+  add_subdirectory(proto)
+endif()
+
 add_library(torch_cpu ${Caffe2_CPU_SRCS})
 target_link_libraries(torch_cpu PUBLIC c10)
 
